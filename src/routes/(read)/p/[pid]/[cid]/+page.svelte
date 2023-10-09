@@ -146,7 +146,11 @@
 	</div>
 
 	{#if chapterNavigation?.current && project}
-		{#await content then awaited}
+		{#await content}
+			<div class="grid place-items-center my-4">
+				<span class="loading loading-dots loading-lg" />
+			</div>
+		{:then awaited}
 			{#if typeof awaited.content === 'string'}
 				<div
 					class="prose prose-lg mx-auto max-w-2xl break-words px-8 pb-32"
