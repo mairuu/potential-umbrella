@@ -130,24 +130,14 @@
 	<title>{project?.name || ''} Ch. {chapterNavigation?.current.no || ''}</title>
 </svelte:head>
 
-<ReadNav bind:showNav {project} {chapterNavigation} />
+<ReadNav bind:showNav {chapterNavigation} />
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div on:click={() => (showNav = !showNav)}>
-	<div class="mx-auto w-[80vw] max-w-lg pb-16 pt-32 text-center">
-		<h1 class="text-lg font-semibold">
-			{project?.name || ''}
-		</h1>
-		<div class="mx-auto mb-4 mt-2 h-2 w-8 bg-primary" />
-		<p class="text-base-content/60">
-			Ch.{chapterNavigation?.current?.no || ''} - {chapterNavigation?.current?.name || ''}
-		</p>
-	</div>
-
 	{#if chapterNavigation?.current && project}
 		{#await content}
-			<div class="grid place-items-center my-4">
+			<div class="grid place-items-center my-4 pt-16">
 				<span class="loading loading-dots loading-lg" />
 			</div>
 		{:then awaited}

@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { ChapterEntity } from '~/data/database/entities/ChapterEntity';
-	import type { ProjectEntity } from '~/data/database/entities/ProjectEntity';
 
-	export let project: ProjectEntity | null;
 	export let chapterNavigation: Record<'previous' | 'current' | 'next', ChapterEntity> | undefined;
 
 	export let showNav: boolean;
@@ -47,34 +45,53 @@
 	class="pt-safe fixed left-0 right-0 top-0 border-b border-base-content/10 bg-base-100 transition-transform"
 	class:hide-top={!showNav}
 >
-	<div class="mx-auto flex h-14 max-w-2xl items-center gap-4 px-8">
-		<a href="." class="btn-sm btn">Back</a>
-		<div>
-			<div class="line-clamp-1 text-sm">
-				{project?.name ?? ''}
-			</div>
-			<div class="line-clamp-1 text-xs text-base-content/60">
-				{chapterNavigation?.current?.no ?? ''} - {chapterNavigation?.current?.name ?? ''}
-			</div>
+	<div class="flex h-14 items-center md:justify-between gap-4 px-4">
+		<a href="." class="btn btn-sm btn-ghost">
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				class="w-6 h-6"
+				width="24"
+				height="24"
+				viewBox="0 0 24 24"
+				stroke-width="2"
+				stroke="currentColor"
+				fill="none"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			>
+				<path stroke="none" d="M0 0h24v24H0z" fill="none" />
+				<path d="M4 6l16 0" />
+				<path d="M4 12l16 0" />
+				<path d="M4 18l16 0" />
+			</svg>
+		</a>
+		<div class="md:max-w-[60vw] md:line-clamp-1">
+			<span class="text-sm text-base-content/60 md:inline-block md:text-base">
+				Ch. {chapterNavigation?.current?.no ?? ''} - {chapterNavigation?.current?.name ?? ''}
+			</span>
 		</div>
+		<div class="md:w-16" />
 	</div>
 </div>
 
 <div
-	class="pb-safe fixed bottom-0 left-0 right-0 border-t border-base-content/10 bg-base-100 px-6 transition-transform"
+	class="pb-safe fixed bottom-0 left-0 right-0 border-t border-base-content/10 bg-base-100 transition-transform"
 	class:hide-bot={!showNav}
 >
-	<div class="mx-auto flex h-14 max-w-2xl items-center justify-end gap-4">
-		<a
-			href={chapterNavigation?.previous ? `./${chapterNavigation.previous.id}` : '.'}
-			class:btn-disabled={!chapterNavigation?.previous}
-			class="btn-sm btn">Previous</a
-		>
-		<a
-			href={chapterNavigation?.next ? `./${chapterNavigation.next.id}` : '.'}
-			class:btn-disabled={!chapterNavigation?.next}
-			class="btn-sm btn">Next</a
-		>
+	<div class="flex h-14 items-center justify-end gap-4 px-4">
+		<div class="join">
+			<a
+				href={chapterNavigation?.previous ? `./${chapterNavigation.previous.id}` : '.'}
+				class:btn-disabled={!chapterNavigation?.previous}
+				class="btn-sm btn join-item">Previous</a
+			>
+			<div class="join-item border-l-4 border-transparent"></div>
+			<a
+				href={chapterNavigation?.next ? `./${chapterNavigation.next.id}` : '.'}
+				class:btn-disabled={!chapterNavigation?.next}
+				class="btn-sm btn join-item">Next</a
+			>
+		</div>
 	</div>
 </div>
 
