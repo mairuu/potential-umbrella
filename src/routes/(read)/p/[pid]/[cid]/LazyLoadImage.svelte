@@ -62,6 +62,6 @@
 		bind:this={holder}
 		class="inline-block max-w-full"
 		style:width={width + 'px'}
-		style:height={height + 'px'}
+		style:aspect-ratio={`${width} / ${height}`}
 	/>
 {/if}

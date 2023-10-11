@@ -143,7 +143,7 @@
 		{:then awaited}
 			{#if typeof awaited.content === 'string'}
 				<div
-					class="prose prose-lg mx-auto max-w-2xl break-words px-8 pb-32"
+					class="prose prose-lg mx-auto max-w-2xl break-words px-8 pt-16 pb-24"
 					bind:this={contentContainer}
 				>
 					{@html awaited.content}

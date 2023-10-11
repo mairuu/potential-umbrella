@@ -45,13 +45,11 @@
 	class="pt-safe fixed left-0 right-0 top-0 border-b border-base-content/10 bg-base-100 transition-transform"
 	class:hide-top={!showNav}
 >
-	<div class="flex h-14 items-center md:justify-between gap-4 px-4">
-		<a href="." class="btn btn-sm btn-ghost">
+	<div class="flex h-14 items-center md:justify-between">
+		<a href="." class="h-full btn btn-ghost rounded-none no-animation px-4">
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
-				class="w-6 h-6"
-				width="24"
-				height="24"
+				class="w-7 h-7"
 				viewBox="0 0 24 24"
 				stroke-width="2"
 				stroke="currentColor"
@@ -79,13 +77,12 @@
 	class:hide-bot={!showNav}
 >
 	<div class="flex h-14 items-center justify-end gap-4 px-4">
-		<div class="join">
+		<div class="join gap-1">
 			<a
 				href={chapterNavigation?.previous ? `./${chapterNavigation.previous.id}` : '.'}
 				class:btn-disabled={!chapterNavigation?.previous}
 				class="btn-sm btn join-item">Previous</a
 			>
-			<div class="join-item border-l-4 border-transparent"></div>
 			<a
 				href={chapterNavigation?.next ? `./${chapterNavigation.next.id}` : '.'}
 				class:btn-disabled={!chapterNavigation?.next}
