@@ -1,39 +1,11 @@
 import type { RequestHandler } from '@sveltejs/kit';
-
-const genreIdLookup = new Map([
-	['fantasy', '1'],
-	['action', '2'],
-	['drama', '3'],
-	['sport', '5'],
-	['sci-fi', '7'],
-	['comedy', '8'],
-	['slice of life', '9'],
-	['romance', '10'],
-	['adventure', '13'],
-	['yaoi', '23'],
-	['yuri', '24'],
-	['trap', '25'],
-	['gender blender', '26'],
-	['mystery', '32'],
-	['doujinshi', '37'],
-	['gourmet', '41'],
-	['shoujo', '42'],
-	['school life', '43'],
-	['isekai', '44'],
-	['second life', '45'],
-	['shounen', '46'],
-	['horror', '47'],
-	['one shot', '48'],
-	['seinen', '49'],
-	['harem', '50'],
-	['reincanate', '51']
-]);
+import { projectGenreIdLookup, type ProjectGenre } from '~/domain/project/ProjectGenre';
 
 export const GET: RequestHandler = async ({ url }) => {
 	const keyword = url.searchParams.get('keyword') || '';
 	const genres = (url.searchParams.get('genres') || '')
 		.split('.')
-		.map((genre) => genre && genreIdLookup.get(genre))
+		.map((genre) => genre && projectGenreIdLookup.get(genre as ProjectGenre))
 		.filter(Boolean);
 	const types = (url.searchParams.get('types') || '')
 		.split('.')

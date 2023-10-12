@@ -1,7 +1,6 @@
 <script lang="ts">
+	import { projectTypes } from '~/domain/project/ProjectType';
 	import HomeGallery from './HomeGallery.svelte';
-
-	const types = ['manga', 'novel'];
 
 	let w = 0;
 	$: n = w < 768 ? 6 : 8;
@@ -35,14 +34,14 @@
 		</div>
 	</div>
 
-	{#each types as type}
+	{#each projectTypes as projectType}
 		<div class="my-6 border-b-4 border-base-content/10" />
 
 		<div class="mx-4 my-6 flex items-baseline justify-between md:mx-0">
-			<h1 class="font-semi text-xl">{type[0].toUpperCase() + type.slice(1)}</h1>
-			<a href="/latest/{type}" class="underline">More</a>
+			<h1 class="font-semi text-xl">{projectType[0].toUpperCase() + projectType.slice(1)}</h1>
+			<a href="/latest/{projectType}" class="underline">More</a>
 		</div>
 
-		<HomeGallery {n} {type} />
+		<HomeGallery {n} type={projectType} />
 	{/each}
 </div>

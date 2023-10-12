@@ -9,6 +9,8 @@ import type { ChapterEntity } from '~/data/database/entities/ChapterEntity';
 import { resourcePending, resourceSucess, type Resource } from './core/Resouce';
 import type { Transactor } from './database/Transactor';
 import { db } from './module';
+import type { ProjectType } from '~/domain/project/ProjectType';
+import type { ProjectGenre } from '~/domain/project/ProjectGenre';
 
 export function mapToResource<T>(observable: Observable<T>): Observable<Resource<T>> {
 	return observable.pipe(map(resourceSucess), startWith(resourcePending(null)));
@@ -35,7 +37,7 @@ export async function serachProjcts(
 		keyword = '',
 		genres = [],
 		types = []
-	}: { keyword?: string | null; genres?: string[] | null; types?: string[] | null },
+	}: { keyword?: string | null; genres?: ProjectGenre[] | null; types?: ProjectType[] | null },
 	{ signal }: { signal?: AbortSignal } = {}
 ) {
 	const search = new URLSearchParams();
@@ -52,7 +54,7 @@ export async function serachProjcts(
 }
 
 export async function fetchLatestProjects(
-	{ type, page = 0, takes = 12 }: { type: string; page?: number; takes?: number },
+	{ type, page = 0, takes = 12 }: { type: ProjectType; page?: number; takes?: number },
 	{ signal }: { signal?: AbortSignal } = {}
 ) {
 	const search = new URLSearchParams();

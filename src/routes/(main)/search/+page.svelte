@@ -7,37 +7,8 @@
 	import { remoteToLocalProject, serachProjcts } from '~/lib/temp';
 	import { db } from '~/lib/module';
 	import { PROJECT_STORE_NAME } from '~/data/database/TofuDbSchema';
-
-	const genreNames = [
-		'fantasy',
-		'action',
-		'drama',
-		'sport',
-		'sci-fi',
-		'comedy',
-		'slice of life',
-		'romance',
-		'adventure',
-		'yaoi',
-		'yuri',
-		'trap',
-		'gender blender',
-		'mystery',
-		'doujinshi',
-		'gourmet',
-		'shoujo',
-		'school life',
-		'isekai',
-		'second life',
-		'shounen',
-		'horror',
-		'one shot',
-		'seinen',
-		'harem',
-		'reincanate'
-	];
-
-	const projectTypes = ['manga', 'novel'];
+	import { projectTypes, type ProjectType } from '~/domain/project/ProjectType';
+	import { projectGenres, type ProjectGenre } from '~/domain/project/ProjectGenre';
 
 	export let data: PageData;
 	$: onSearchParamsChanged(data.searchProjectParams);
@@ -56,19 +27,19 @@
 		const types = params?.types || [];
 
 		keyword = params?.keyword || '';
-		checkedGenres = toChecked(genres, genreNames);
+		checkedGenres = toChecked(genres, projectGenres);
 		checkedProjectTypes = toChecked(types, projectTypes);
 
 		result = params ? getSearchResult(keyword, genres, types) : null;
 	}
 
-	function getSearchResult(keyword: string, genres: string[], types: string[]) {
+	function getSearchResult(keyword: string, genres: ProjectGenre[], types: ProjectType[]) {
 		if (result && !result.controller.signal.aborted) {
 			result.controller.abort();
 		}
 
 		const controller = new AbortController();
-		const filters = types.concat(genres);
+		const filters = [...types, ...genres];
 		const items = serachProjcts({ genres, keyword, types }, { signal: controller.signal }).then(
 			(remotes) => db.mutate([PROJECT_STORE_NAME]).handledBy(remoteToLocalProject(remotes)).exec()
 		);
@@ -82,7 +53,7 @@
 
 	function onApplyFilter() {
 		const types = fromChecked(checkedProjectTypes, projectTypes);
-		const genres = fromChecked(checkedGenres, genreNames);
+		const genres = fromChecked(checkedGenres, projectGenres);
 		const search = new URLSearchParams();
 		keyword.length && search.set('keyword', keyword);
 		genres.length && search.set('genres', genres.join('.'));
@@ -95,14 +66,14 @@
 		}
 	}
 
-	function fromChecked(checked: boolean[], names: string[]) {
+	function fromChecked(checked: boolean[], names: readonly string[]) {
 		return checked.reduce((arr, checked, i) => {
 			if (checked) arr.push(names[i]);
 			return arr;
 		}, [] as string[]);
 	}
 
-	function toChecked(params: string[], names: string[]) {
+	function toChecked(params: string[], names: readonly string[]) {
 		const checked = Array.from(Array(names.length)).fill(false);
 		params.forEach((name) => (checked[names.indexOf(name)] = true));
 		return checked;
@@ -184,7 +155,7 @@
 
 				<div class="mt-4 border-b-4 border-base-content/10" />
 				<h1 class="my-4">Include Genres</h1>
-				<FlagsToggler labels={genreNames} bind:checked={checkedGenres} />
+				<FlagsToggler labels={projectGenres} bind:checked={checkedGenres} />
 
 				<div class="mt-4 border-b-4 border-base-content/10" />
 				<div class="modal-action">

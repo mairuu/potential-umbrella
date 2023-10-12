@@ -173,7 +173,7 @@
 	</div>
 
 	<div class="flex border-b border-base-content/10 py-4 font-semibold">
-		<span class="grid w-12 shrink-0 place-items-center">{chapters?.length ?? ''}</span> 
+		<span class="grid w-12 shrink-0 place-items-center">{chapters?.length ?? ''}</span>
 		<span>chapter{chapters?.length === 1 ? '' : 's'}</span>
 	</div>
 

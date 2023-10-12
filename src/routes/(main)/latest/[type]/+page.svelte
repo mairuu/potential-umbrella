@@ -6,6 +6,7 @@
 	import { db } from '~/lib/module';
 	import ProjectCard from '../../ProjectCard.svelte';
 	import { afterNavigate, disableScrollHandling } from '$app/navigation';
+	import type { ProjectType } from '~/domain/project/ProjectType';
 
 	export let data: PageData;
 
@@ -29,7 +30,7 @@
 		}
 	};
 
-	async function fetchAndAppend(type: string, page: number) {
+	async function fetchAndAppend(type: ProjectType, page: number) {
 		if (appending) return;
 		appending = true;
 
@@ -40,7 +41,7 @@
 		appending = false;
 	}
 
-	async function fetchPage(type: string, page: number) {
+	async function fetchPage(type: ProjectType, page: number) {
 		const remoteProjects = await fetchLatestProjects({ type, page });
 		const ids = await db
 			.mutate([PROJECT_STORE_NAME])

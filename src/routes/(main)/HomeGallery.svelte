@@ -3,9 +3,10 @@
 	import { db } from '~/lib/module';
 	import ProjectCard from './ProjectCard.svelte';
 	import { fetchLatestProjects, remoteToLocalProject } from '~/lib/temp';
+	import type { ProjectType } from '~/domain/project/ProjectType';
 
 	export let n: number;
-	export let type: string;
+	export let type: ProjectType;
 
 	let items: number[] = [];
 	let exists = new Set<number>();

@@ -1,5 +1,5 @@
 <script lang="ts">
-	export let labels: string[];
+	export let labels: readonly string[];
 	export let checked: boolean[];
 </script>
 
