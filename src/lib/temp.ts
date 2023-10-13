@@ -213,3 +213,18 @@ export function remoteToLocalProject(
 		return [await Promise.all(putResults) /* silence */];
 	};
 }
+
+export function updateChapter(
+	id: number,
+	updater: (chapter: ChapterEntity) => ChapterEntity
+): Transactor<TofuDbSchema, 'chapters'[], 'readwrite', number | undefined> {
+	return async (tx) => {
+		const chapterStore = tx.objectStore(CHAPTER_STORE_NAME);
+		let chapter = await chapterStore.get(id);
+		if (chapter) {
+			const putResult = await chapterStore.put(updater(chapter));
+			return [putResult, [[CHAPTER_STORE_NAME, [putResult]]]];
+		}
+		return [undefined];
+	};
+}

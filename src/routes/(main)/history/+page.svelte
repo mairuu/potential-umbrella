@@ -6,7 +6,7 @@
 	} from '~/data/database/TofuDbSchema';
 	import type { ChapterEntity } from '~/data/database/entities/ChapterEntity';
 	import { db } from '~/lib/module';
-	import { mapToResource } from '~/lib/temp';
+	import { mapToResource, updateChapter } from '~/lib/temp';
 	import type { ProjectEntity } from '~/data/database/entities/ProjectEntity';
 
 	const fa = new Intl.DateTimeFormat(undefined, {
@@ -19,6 +19,9 @@
 		month: 'numeric',
 		year: '2-digit'
 	});
+
+	const readChapters$ = mapToResource(getReadChapters().$());
+	$: readChapters = $readChapters$.data || [];
 
 	type ProjectChapter = { project: ProjectEntity; chapter: ChapterEntity };
 
@@ -69,8 +72,17 @@
 		return arr;
 	}
 
-	const readChapters$ = mapToResource(getReadChapters().$());
-	$: readChapters = $readChapters$.data || [];
+	function onDeleteHistory(pc: ProjectChapter) {
+		db.mutate([CHAPTER_STORE_NAME])
+			.handledBy(
+				updateChapter(pc.chapter.id, (chapter) => {
+					chapter.read = 0;
+					chapter.progress = 0;
+					return chapter;
+				})
+			)
+			.exec();
+	}
 </script>
 
 <svelte:head>
@@ -92,27 +104,53 @@
 					<div class="ml-3 w-full border-t border-base-content/10" />
 				</div>
 
-				{#each items as { chapter, project } (chapter.id)}
-					<a
-						class="relative flex flex-1 gap-x-3"
-						href="/p/{project.id}/{chapter.id}"
-						title={`${project.name} Ch.${chapter.no} - ${chapter.name}`}
-					>
-						<img
-							alt=""
-							src="/api/project/cover?pid={project.id}"
-							class="block aspect-[2/3] w-16 rounded-md object-cover object-top"
-						/>
+				{#each items as item (item.chapter.id)}
+					{@const { chapter, project } = item}
+					<div class="flex">
+						<a
+							class="relative flex flex-1 gap-x-3"
+							href="/p/{project.id}/{chapter.id}"
+							title={`${project.name} Ch.${chapter.no} - ${chapter.name}`}
+						>
+							<img
+								alt=""
+								src="/api/project/cover?pid={project.id}"
+								class="block aspect-[2/3] w-16 rounded-md object-cover object-top"
+							/>
 
-						<div class="flex-1 self-center text-sm">
-							<span class="line-clamp-2">
-								{project.name}
-							</span>
-							<span class="block pt-1 text-base-content/60">
-								Ch. {chapter.no} - {fa.format(chapter.read)}
-							</span>
-						</div>
-					</a>
+							<div class="flex-1 self-center text-sm">
+								<span class="line-clamp-2">
+									{project.name}
+								</span>
+								<span class="block pt-1 text-base-content/60">
+									Ch. {chapter.no} - {fa.format(chapter.read)}
+								</span>
+							</div>
+						</a>
+						<button
+							class="btn btn-ghost btn-circle self-center flex-shrink-0"
+							on:click={() => onDeleteHistory(item)}
+						>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								class="icon icon-tabler icon-tabler-trash-x"
+								width="24"
+								height="24"
+								viewBox="0 0 24 24"
+								stroke-width="2"
+								stroke="currentColor"
+								fill="none"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							>
+								<path stroke="none" d="M0 0h24v24H0z" fill="none" />
+								<path d="M4 7h16" />
+								<path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
+								<path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+								<path d="M10 12l4 4m0 -4l-4 4" />
+							</svg>
+						</button>
+					</div>
 				{/each}
 			{/each}
 		</div>

@@ -7,12 +7,12 @@
 		getProjectById,
 		getChaptersByProjectId,
 		initializeProject,
-		fetchChapterContent
+		fetchChapterContent,
+		updateChapter
 	} from '~/lib/temp';
 	import { db } from '~/lib/module';
-	import { CHAPTER_STORE_NAME, type TofuDbSchema } from '~/data/database/TofuDbSchema';
+	import { CHAPTER_STORE_NAME } from '~/data/database/TofuDbSchema';
 	import type { ChapterEntity } from '~/data/database/entities/ChapterEntity';
-	import type { Transactor } from '~/lib/database/Transactor';
 	import { afterNavigate, beforeNavigate, disableScrollHandling } from '$app/navigation';
 	import LazyLoadImage from './LazyLoadImage.svelte';
 	import ReadNav from './ReadNav.svelte';
@@ -56,21 +56,6 @@
 		let next = chapters[i - 1];
 
 		return { current, previous, next };
-	}
-
-	function updateChapter(
-		id: number,
-		updater: (chapter: ChapterEntity) => ChapterEntity
-	): Transactor<TofuDbSchema, 'chapters'[], 'readwrite', number | undefined> {
-		return async (tx) => {
-			const chapterStore = tx.objectStore(CHAPTER_STORE_NAME);
-			let chapter = await chapterStore.get(id);
-			if (chapter) {
-				const putResult = await chapterStore.put(updater(chapter));
-				return [putResult, [[CHAPTER_STORE_NAME, [putResult]]]];
-			}
-			return [undefined];
-		};
 	}
 
 	function calculateProgress() {
