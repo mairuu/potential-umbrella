@@ -7,6 +7,7 @@ import type { OpeartionBuilder } from './OperationBuilder';
 import { OpeartionBuilderImpl } from './OperationBuilderImpl';
 import type { Query } from './Query';
 import type { TransactorResult } from './Transactor';
+import { hasChanged } from './Changes';
 
 export class DatabaseImpl<DbTypes extends DBSchema> implements Database<DbTypes> {
 	private _changes$ = new Subject<Changes>();
@@ -56,6 +57,10 @@ export class DatabaseImpl<DbTypes extends DBSchema> implements Database<DbTypes>
 	}
 
 	notifyChanges(changes: Changes): void {
+		if (!hasChanged(changes)) {
+			return;
+		}
+
 		this._changes$.next(changes);
 		this._bc.postMessage(changes);
 	}
