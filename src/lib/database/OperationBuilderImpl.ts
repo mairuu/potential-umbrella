@@ -12,7 +12,7 @@ export class OpeartionBuilderImpl<
 	Mode extends IDBTransactionMode
 > implements OpeartionBuilder<DbTypes, Stores, Mode>
 {
-	private _observings?: [string, IDBKeyRange | null][];
+	private _observing?: [string, IDBKeyRange | null][];
 
 	constructor(private _db: Database<DbTypes>, private _stores: Stores, private mode: Mode) {}
 
@@ -20,11 +20,11 @@ export class OpeartionBuilderImpl<
 		store: Store,
 		key: StoreKey<DbTypes, Store> | IDBKeyRange | null = null
 	): this {
-		if (!this._observings) {
-			this._observings = [];
+		if (!this._observing) {
+			this._observing = [];
 		}
 
-		this._observings.push([
+		this._observing.push([
 			store as string,
 			key instanceof IDBKeyRange ? key : key === null ? null : IDBKeyRange.only(key)
 		]);
@@ -39,6 +39,6 @@ export class OpeartionBuilderImpl<
 			transactor
 		};
 
-		return new PreparedOperationImpl(this._db, query, this._observings);
+		return new PreparedOperationImpl(this._db, query, this._observing);
 	}
 }

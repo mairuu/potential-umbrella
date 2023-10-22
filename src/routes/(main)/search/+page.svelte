@@ -4,7 +4,7 @@
 	import ProjectCard from '../ProjectCard.svelte';
 	import FlagsToggler from './FlagsToggler.svelte';
 	import type { PageData } from './$types';
-	import { remoteToLocalProject, serachProjcts } from '~/lib/temp';
+	import { remoteToLocalProject, searchProjects } from '~/lib/temp';
 	import { db } from '~/lib/module';
 	import { PROJECT_STORE_NAME } from '~/data/database/TofuDbSchema';
 	import { projectTypes, type ProjectType } from '~/domain/project/ProjectType';
@@ -40,7 +40,7 @@
 
 		const controller = new AbortController();
 		const filters = [...types, ...genres];
-		const items = serachProjcts({ genres, keyword, types }, { signal: controller.signal }).then(
+		const items = searchProjects({ genres, keyword, types }, { signal: controller.signal }).then(
 			(remotes) => db.mutate([PROJECT_STORE_NAME]).handledBy(remoteToLocalProject(remotes)).exec()
 		);
 

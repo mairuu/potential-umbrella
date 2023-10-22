@@ -1,3 +1,5 @@
+// noinspection SpellCheckingInspection
+
 export type ProjectGenre = (typeof projectGenres)[number];
 
 export const projectGenreIdLookup = new Map([

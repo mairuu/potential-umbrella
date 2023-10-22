@@ -6,14 +6,14 @@ import {
 	type TofuDbSchema
 } from '~/data/database/TofuDbSchema';
 import type { ChapterEntity } from '~/data/database/entities/ChapterEntity';
-import { resourcePending, resourceSucess, type Resource } from './core/Resouce';
+import { resourcePending, resourceSuccess, type Resource } from './core/Resource';
 import type { Transactor } from './database/Transactor';
 import { db } from './module';
 import type { ProjectType } from '~/domain/project/ProjectType';
 import type { ProjectGenre } from '~/domain/project/ProjectGenre';
 
 export function mapToResource<T>(observable: Observable<T>): Observable<Resource<T>> {
-	return observable.pipe(map(resourceSucess), startWith(resourcePending(null)));
+	return observable.pipe(map(resourceSuccess), startWith(resourcePending(null)));
 }
 
 export function getProjectById(projectId: number) {
@@ -32,7 +32,7 @@ export function getChaptersByProjectId(id: number) {
 		);
 }
 
-export async function serachProjcts(
+export async function searchProjects(
 	{
 		keyword = '',
 		genres = [],
@@ -74,11 +74,11 @@ export async function fetchProjectDetail(
 	{ projectId }: { projectId: number },
 	{ signal }: { signal?: AbortSignal } = {}
 ) {
-	const serach = new URLSearchParams();
-	serach.set('pid', projectId.toString());
-	serach.sort();
+	const search = new URLSearchParams();
+	search.set('pid', projectId.toString());
+	search.sort();
 
-	const response = await fetch('/api/project/detail?' + serach.toString(), {
+	const response = await fetch('/api/project/detail?' + search.toString(), {
 		signal
 	});
 	const model: {
@@ -123,7 +123,7 @@ export async function initializeProject(projectId: number) {
 
 	const detail = await fetchProjectDetail({ projectId });
 
-	db.mutate([PROJECT_STORE_NAME, CHAPTER_STORE_NAME])
+	await db.mutate([PROJECT_STORE_NAME, CHAPTER_STORE_NAME])
 		.handledBy(async (tx) => {
 			const projectStore = tx.objectStore(PROJECT_STORE_NAME);
 			const chapterStore = tx.objectStore(CHAPTER_STORE_NAME);

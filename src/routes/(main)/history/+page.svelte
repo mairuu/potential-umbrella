@@ -28,11 +28,11 @@
 	function getReadChapters() {
 		return db.query([CHAPTER_STORE_NAME, PROJECT_STORE_NAME]).handledBy(async (tx) => {
 			const projectsStore = tx.objectStore(PROJECT_STORE_NAME);
-			const chpatersStore = tx.objectStore(CHAPTER_STORE_NAME);
+			const chaptersStore = tx.objectStore(CHAPTER_STORE_NAME);
 
 			let map = new Map<number, ProjectEntity>();
 			let arr: ProjectChapter[] = [];
-			let cursor = await chpatersStore
+			let cursor = await chaptersStore
 				.index(CHAPTER_STORE_INDEX_READ)
 				.openCursor(IDBKeyRange.lowerBound(0, true), 'prev');
 
@@ -133,9 +133,7 @@
 						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
-								class="icon icon-tabler icon-tabler-trash-x"
-								width="24"
-								height="24"
+								class="w-6 h-6"
 								viewBox="0 0 24 24"
 								stroke-width="2"
 								stroke="currentColor"

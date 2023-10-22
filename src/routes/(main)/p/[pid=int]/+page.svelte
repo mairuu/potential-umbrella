@@ -2,7 +2,7 @@
 	import { PROJECT_STORE_NAME } from '~/data/database/TofuDbSchema';
 	import { db } from '~/lib/module';
 	import type { PageData } from './$types';
-	import { isResourceSucess } from '~/lib/core/Resouce';
+	import { isResourceSuccess } from '~/lib/core/Resource';
 	import { fade } from 'svelte/transition';
 	import {
 		mapToResource,
@@ -36,7 +36,7 @@
 		}
 
 		if (chapter?.progress) {
-			label = `contiune reading chapter ${chapter.no}`;
+			label = `continue reading chapter ${chapter.no}`;
 		} else if (chapter) {
 			label = `start reading chapter ${chapter.no}`;
 		}
@@ -48,7 +48,7 @@
 		};
 	}
 
-	$: if (isResourceSucess($project$)) {
+	$: if (isResourceSuccess($project$)) {
 		const project = $project$.data;
 
 		if (!project || !project.initialized) {

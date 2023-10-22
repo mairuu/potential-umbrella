@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
 	import type { PageData } from './$types';
-	import { isResourceSucess } from '~/lib/core/Resouce';
+	import { isResourceSuccess } from '$lib/core/Resource';
 	import {
 		mapToResource,
 		getProjectById,
@@ -33,7 +33,7 @@
 	$: progress = chapterNavigation?.current.progress;
 	$: if (progress) content.then(() => tick()).then(() => restoreProgress(cid, progress!));
 
-	$: if (isResourceSucess($project$)) {
+	$: if (isResourceSuccess($project$)) {
 		const project = $project$.data;
 
 		if (!project || !project.initialized) {
