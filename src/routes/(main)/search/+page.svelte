@@ -5,7 +5,7 @@
 	import FlagsToggler from './FlagsToggler.svelte';
 	import type { PageData } from './$types';
 	import { remoteToLocalProject, searchProjects } from '~/lib/temp';
-	import { db } from '~/lib/module';
+	import { db } from '~/module';
 	import { PROJECT_STORE_NAME } from '~/data/database/TofuDbSchema';
 	import { projectTypes, type ProjectType } from '~/domain/project/ProjectType';
 	import { projectGenres, type ProjectGenre } from '~/domain/project/ProjectGenre';

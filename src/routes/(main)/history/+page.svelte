@@ -5,7 +5,7 @@
 		PROJECT_STORE_NAME
 	} from '~/data/database/TofuDbSchema';
 	import type { ChapterEntity } from '~/data/database/entities/ChapterEntity';
-	import { db } from '~/lib/module';
+	import { db } from '~/module';
 	import { mapToResource, updateChapter } from '~/lib/temp';
 	import type { ProjectEntity } from '~/data/database/entities/ProjectEntity';
 

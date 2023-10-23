@@ -8,7 +8,7 @@ import {
 import type { ChapterEntity } from '~/data/database/entities/ChapterEntity';
 import { resourcePending, resourceSuccess, type Resource } from './core/Resource';
 import type { Transactor } from './database/Transactor';
-import { db } from './module';
+import { db } from '../module';
 import type { ProjectType } from '~/domain/project/ProjectType';
 import type { ProjectGenre } from '~/domain/project/ProjectGenre';
 

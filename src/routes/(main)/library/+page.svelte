@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { PROJECT_STORE_INDEX_FAVORITE, PROJECT_STORE_NAME } from '~/data/database/TofuDbSchema';
-	import { db } from '~/lib/module';
+	import { db } from '~/module';
 	import { mapToResource } from '~/lib/temp';
 	import LibraryCard from './LibraryCard.svelte';
 

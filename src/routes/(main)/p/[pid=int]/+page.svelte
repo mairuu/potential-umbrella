@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { PROJECT_STORE_NAME } from '~/data/database/TofuDbSchema';
-	import { db } from '~/lib/module';
+	import { db } from '~/module';
 	import type { PageData } from './$types';
 	import { isResourceSuccess } from '~/lib/core/Resource';
 	import { fade } from 'svelte/transition';

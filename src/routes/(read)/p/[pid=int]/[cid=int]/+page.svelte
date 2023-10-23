@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
 	import type { PageData } from './$types';
-	import { isResourceSuccess } from '$lib/core/Resource';
+	import { isResourceSuccess } from '~/lib/core/Resource';
 	import {
 		mapToResource,
 		getProjectById,
@@ -10,7 +10,7 @@
 		fetchChapterContent,
 		updateChapter
 	} from '~/lib/temp';
-	import { db } from '~/lib/module';
+	import { db } from '~/module';
 	import { CHAPTER_STORE_NAME } from '~/data/database/TofuDbSchema';
 	import type { ChapterEntity } from '~/data/database/entities/ChapterEntity';
 	import { afterNavigate, beforeNavigate, disableScrollHandling } from '$app/navigation';

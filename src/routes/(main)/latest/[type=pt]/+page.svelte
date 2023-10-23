@@ -3,7 +3,7 @@
 	import type { PageData, Snapshot } from './$types';
 	import { fetchLatestProjects, remoteToLocalProject } from '~/lib/temp';
 	import { PROJECT_STORE_NAME } from '~/data/database/TofuDbSchema';
-	import { db } from '~/lib/module';
+	import { db } from '~/module';
 	import ProjectCard from '../../ProjectCard.svelte';
 	import { afterNavigate, disableScrollHandling } from '$app/navigation';
 	import type { ProjectType } from '~/domain/project/ProjectType';
