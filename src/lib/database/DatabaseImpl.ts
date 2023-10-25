@@ -12,7 +12,10 @@ import { hasChanged } from './Changes';
 export class DatabaseImpl<DbTypes extends DBSchema> implements Database<DbTypes> {
 	private _changes$ = new Subject<Changes>();
 
-	constructor(private _provider: IdbpProvider<DbTypes>, private _bc: BroadcastChannel) {
+	constructor(
+		private _provider: IdbpProvider<DbTypes>,
+		private _bc: BroadcastChannel
+	) {
 		_bc.onmessage = (ev) => this._changes$.next(ev.data);
 	}
 

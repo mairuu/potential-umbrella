@@ -3,7 +3,7 @@
 	export let checked: boolean[];
 </script>
 
-<div class="flex gap-2 flex-wrap">
+<div class="flex flex-wrap gap-2">
 	{#each labels as label, i}
 		<label class="btn btn-xs" class:btn-success={checked[i]}>
 			<span>

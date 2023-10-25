@@ -34,7 +34,7 @@
 	{:else}
 		{#each Array(n) as _}
 			<div class="">
-				<div class="aspect-[5/7] mb-2" />
+				<div class="mb-2 aspect-[5/7]" />
 				<div class="min-h-12" />
 			</div>
 		{/each}

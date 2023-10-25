@@ -130,7 +130,7 @@
 					type="search"
 					id="search-input"
 					placeholder="keywords"
-					class="mr-4 w-full bg-transparent outline-none h-12"
+					class="mr-4 h-12 w-full bg-transparent outline-none"
 					on:change={() => {
 						onApplyFilter();
 					}}
@@ -143,7 +143,7 @@
 			</label>
 		</div>
 
-		<button class="btn-sm mt-4 btn w-full" on:click={showFilterModal}>filter</button>
+		<button class="btn btn-sm mt-4 w-full" on:click={showFilterModal}>filter</button>
 
 		<dialog bind:this={filterDialog} class="modal modal-bottom sm:modal-middle">
 			<form method="dialog" class="modal-box">
@@ -182,12 +182,12 @@
 
 	{#if result?.items}
 		{#await result.items}
-			<div class="grid place-items-center my-4">
+			<div class="my-4 grid place-items-center">
 				<span class="loading loading-dots loading-lg" />
 			</div>
 		{:then ids}
 			{#if result.filters.length}
-				<div class="mx-4 my-6 md:mx-0 flex flex-wrap gap-2">
+				<div class="mx-4 my-6 flex flex-wrap gap-2 md:mx-0">
 					{#each result.filters as filter (filter)}
 						<span class="badge">{filter}</span>
 					{/each}

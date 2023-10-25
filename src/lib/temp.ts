@@ -123,7 +123,8 @@ export async function initializeProject(projectId: number) {
 
 	const detail = await fetchProjectDetail({ projectId });
 
-	await db.mutate([PROJECT_STORE_NAME, CHAPTER_STORE_NAME])
+	await db
+		.mutate([PROJECT_STORE_NAME, CHAPTER_STORE_NAME])
 		.handledBy(async (tx) => {
 			const projectStore = tx.objectStore(PROJECT_STORE_NAME);
 			const chapterStore = tx.objectStore(CHAPTER_STORE_NAME);

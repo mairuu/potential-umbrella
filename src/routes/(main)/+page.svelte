@@ -15,7 +15,7 @@
 		<div class="mx-4 my-6 flex items-center md:mx-0">
 			<h1 class="text-3xl">Home</h1>
 
-			<a href="/search" class="btn-sm btn-circle btn ml-auto" title="Search">
+			<a href="/search" class="btn btn-circle btn-sm ml-auto" title="Search">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					class="h-4 w-4"

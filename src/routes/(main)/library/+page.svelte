@@ -33,7 +33,7 @@
 	<div class="my-6 border-b-4 border-base-content/10" />
 
 	{#if projectIds.length}
-		<div class="mx-4 my-6 grid grid-cols-3 gap-x-2 gap-y-8 md:grid-cols-4 md:mx-0 md:gap-x-4">
+		<div class="mx-4 my-6 grid grid-cols-3 gap-x-2 gap-y-8 md:mx-0 md:grid-cols-4 md:gap-x-4">
 			{#each projectIds as id (id)}
 				<LibraryCard {id} />
 			{/each}

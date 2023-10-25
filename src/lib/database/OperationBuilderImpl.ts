@@ -14,7 +14,11 @@ export class OpeartionBuilderImpl<
 {
 	private _observing?: [string, IDBKeyRange | null][];
 
-	constructor(private _db: Database<DbTypes>, private _stores: Stores, private mode: Mode) {}
+	constructor(
+		private _db: Database<DbTypes>,
+		private _stores: Stores,
+		private mode: Mode
+	) {}
 
 	observeOn<Store extends StoreNames<DbTypes>>(
 		store: Store,

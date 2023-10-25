@@ -122,19 +122,19 @@
 <div on:click={() => (showNav = !showNav)}>
 	{#if chapterNavigation?.current && project}
 		{#await content}
-			<div class="grid place-items-center my-4 pt-16">
+			<div class="my-4 grid place-items-center pt-16">
 				<span class="loading loading-dots loading-lg" />
 			</div>
 		{:then awaited}
 			{#if typeof awaited.content === 'string'}
 				<div
-					class="prose prose-lg mx-auto max-w-2xl break-words px-8 pt-16 pb-24"
+					class="prose prose-lg mx-auto max-w-2xl break-words px-8 pb-24 pt-16"
 					bind:this={contentContainer}
 				>
 					{@html awaited.content}
 				</div>
 			{:else}
-				<div class="flex gap-2 flex-col" bind:this={contentContainer}>
+				<div class="flex flex-col gap-2" bind:this={contentContainer}>
 					{#each awaited.content as item}
 						<LazyLoadImage
 							class="mx-auto"

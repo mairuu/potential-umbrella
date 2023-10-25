@@ -103,7 +103,7 @@
 </svelte:head>
 
 {#if !project?.initialized}
-	<div class="fixed top-4 z-10 left-1/2 -translate-x-5" transition:fade={{ duration: 150 }}>
+	<div class="fixed left-1/2 top-4 z-10 -translate-x-5" transition:fade={{ duration: 150 }}>
 		<span class="loading loading-dots loading-lg" />
 	</div>
 {/if}
@@ -129,7 +129,7 @@
 
 	<div class="m-4">
 		<button
-			class="no-animation btn-sm btn min-w-[10rem]"
+			class="btn no-animation btn-sm min-w-[10rem]"
 			disabled={!project?.initialized}
 			on:click={handleLibraryBtn}
 		>
@@ -165,7 +165,7 @@
 	<div class="m-4">
 		<a
 			href={continuation.href}
-			class="btn btn-primary btn-sm rounded-2xl btn-block"
+			class="btn btn-primary btn-sm btn-block rounded-2xl"
 			class:btn-disabled={continuation.disabled}
 		>
 			{continuation.label}

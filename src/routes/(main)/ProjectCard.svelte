@@ -24,6 +24,6 @@
 	</div>
 
 	{#if $project?.favorite}
-		<span class="absolute left-1 top-1 badge badge-primary">In Library</span>
+		<span class="badge badge-primary absolute left-1 top-1">In Library</span>
 	{/if}
 </a>

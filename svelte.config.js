@@ -14,7 +14,7 @@ const config = {
 		adapter: adapter(),
 
 		files: {
-			lib: '',
+			lib: ''
 		},
 
 		alias: {

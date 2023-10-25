@@ -46,10 +46,10 @@
 	class:hide-top={!showNav}
 >
 	<div class="flex h-14 items-center md:justify-between">
-		<a href="." class="h-full btn btn-ghost rounded-none no-animation px-4">
+		<a href="." class="btn btn-ghost no-animation h-full rounded-none px-4">
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
-				class="w-7 h-7"
+				class="h-7 w-7"
 				viewBox="0 0 24 24"
 				stroke-width="2"
 				stroke="currentColor"
@@ -63,7 +63,7 @@
 				<path d="M4 18l16 0" />
 			</svg>
 		</a>
-		<div class="md:max-w-[60vw] md:line-clamp-1">
+		<div class="md:line-clamp-1 md:max-w-[60vw]">
 			<span class="text-sm text-base-content/60 md:inline-block md:text-base">
 				Ch. {chapterNavigation?.current?.no ?? ''} - {chapterNavigation?.current?.name ?? ''}
 			</span>
@@ -81,12 +81,12 @@
 			<a
 				href={chapterNavigation?.previous ? `./${chapterNavigation.previous.id}` : '.'}
 				class:btn-disabled={!chapterNavigation?.previous}
-				class="btn-sm btn join-item">Previous</a
+				class="btn join-item btn-sm">Previous</a
 			>
 			<a
 				href={chapterNavigation?.next ? `./${chapterNavigation.next.id}` : '.'}
 				class:btn-disabled={!chapterNavigation?.next}
-				class="btn-sm btn join-item">Next</a
+				class="btn join-item btn-sm">Next</a
 			>
 		</div>
 	</div>

@@ -90,7 +90,7 @@
 	</div>
 
 	{#if appending}
-		<div class="grid place-items-center my-4">
+		<div class="my-4 grid place-items-center">
 			<span class="loading loading-dots loading-lg" />
 		</div>
 	{/if}
