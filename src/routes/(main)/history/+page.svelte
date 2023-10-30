@@ -146,6 +146,11 @@
 			{/each}
 		</div>
 	{:else}
-		<div class="mx-4 my-6 md:mx-0">hint</div>
+		<div class="mx-4 my-6 md:mx-0">
+			<div class="flex flex-col items-center pt-[20vh]">
+				<span class="inline-block text-4xl"> (○´ ― `)ゞ </span>
+				<span class="pt-4"> Nothing read recently </span>
+			</div>
+		</div>
 	{/if}
 </div>
