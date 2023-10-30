@@ -1,14 +1,9 @@
 <script lang="ts">
-	import { PROJECT_STORE_NAME } from '~/data/database/TofuDbSchema';
-	import { db } from '~/module';
+	import { getProjectById } from '~/lib/temp';
 
 	export let id: number;
 
-	$: project = db
-		.query([PROJECT_STORE_NAME])
-		.observeOn(PROJECT_STORE_NAME, id)
-		.handledBy((tx) => tx.objectStore(PROJECT_STORE_NAME).get(id))
-		.$();
+	$: project = getProjectById(id).$();
 </script>
 
 <a class="relative" href="/p/{$project?.id || ''}" title={$project?.name || ''}>
