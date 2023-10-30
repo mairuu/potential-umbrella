@@ -30,20 +30,19 @@
 			const projectsStore = tx.objectStore(PROJECT_STORE_NAME);
 			const chaptersStore = tx.objectStore(CHAPTER_STORE_NAME);
 
-			let map = new Map<number, ProjectEntity>();
+			let set = new Set<number>();
 			let arr: ProjectChapter[] = [];
 			let cursor = await chaptersStore
 				.index(CHAPTER_STORE_INDEX_READ)
 				.openCursor(IDBKeyRange.lowerBound(0, true), 'prev');
 
 			while (cursor) {
-				let project = map.get(cursor.value.pid);
-				if (!project) {
-					project = await projectsStore.get(cursor.value.pid);
-					map.set(cursor.value.id, project!);
+				if (!set.has(cursor.value.pid)) {
+					set.add(cursor.value.pid);
+					let project = await projectsStore.get(cursor.value.pid);
+					arr.push({ project: project!, chapter: cursor.value });
 				}
 
-				arr.push({ project: project!, chapter: cursor.value });
 				cursor = await cursor.continue();
 			}
 
@@ -51,25 +50,16 @@
 		});
 	}
 
-	function groupBySameDay(pcs: ProjectChapter[]): [Date, ProjectChapter[]][] {
-		const arr: [Date, ProjectChapter[]][] = [];
-
-		let currentGroupDate: Date;
-		let currentGroupItems: ProjectChapter[];
-
-		pcs.forEach((pc) => {
-			const readDate = new Date(pc.chapter.read);
-
-			if (!currentGroupDate || readDate.getDay() !== currentGroupDate.getDay()) {
-				currentGroupDate = readDate;
-				currentGroupItems = [pc];
-				arr.push([currentGroupDate, currentGroupItems]);
-			} else {
-				currentGroupItems.push(pc);
-			}
+	function groupBy<T>(
+		items: T[],
+		predicate: (value: T, index: number) => string
+	): Record<string, T[]> {
+		const grouped: Record<string, T[]> = {};
+		items.forEach((value, i) => {
+			const key = predicate(value, i);
+			(grouped[key] || (grouped[key] = [])).push(value);
 		});
-
-		return arr;
+		return grouped;
 	}
 
 	function onDeleteHistory(pc: ProjectChapter) {
@@ -98,9 +88,12 @@
 
 	{#if readChapters.length}
 		<div class="mx-4 my-6 flex flex-col gap-3 md:mx-0">
-			{#each groupBySameDay(readChapters) as [date, items]}
+			{#each Object.entries(groupBy(readChapters, ({ chapter }) => {
+					let readDate = new Date(chapter.read);
+					return `${readDate.getFullYear()}-${readDate.getMonth()}-${readDate.getDate()}`;
+				})) as [date, items] (date)}
 				<div class="flex items-center">
-					<div class="w-16 shrink-0 text-center">{fb.format(date)}</div>
+					<div class="w-16 shrink-0 text-center">{fb.format(new Date(date))}</div>
 					<div class="ml-3 w-full border-t border-base-content/10" />
 				</div>
 
