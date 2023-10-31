@@ -8,9 +8,31 @@ import {
 import type { ChapterEntity } from '~/data/database/entities/ChapterEntity';
 import { resourcePending, resourceSuccess, type Resource } from './core/Resource';
 import type { Transactor } from './database/Transactor';
-import { db } from '../module';
+import { db } from '~/module';
 import type { ProjectType } from '~/domain/project/ProjectType';
 import type { ProjectGenre } from '~/domain/project/ProjectGenre';
+import type { ProjectEntity } from '~/data/database/entities/ProjectEntity';
+
+export function groupBy<K extends string | symbol, T>(
+	items: T[],
+	predicate: (value: T, index: number) => K
+): Record<K, T[]> {
+	const grouped = {} as Record<K, T[]>;
+	items.forEach((value, i) => {
+		const key = predicate(value, i);
+		(grouped[key] || (grouped[key] = [])).push(value);
+	});
+	return grouped;
+}
+
+export function partialAssign<T extends object>(target: T, partial: Partial<T>) {
+	for (const prop in partial) {
+		if (prop in target) {
+			target[prop] = partial[prop]!;
+		}
+	}
+	return target;
+}
 
 export function mapToResource<T>(observable: Observable<T>): Observable<Resource<T>> {
 	return observable.pipe(map(resourceSuccess), startWith(resourcePending(null)));
@@ -215,17 +237,32 @@ export function remoteToLocalProject(
 	};
 }
 
+export function updateProject(
+	projectUpdate: Pick<ProjectEntity, 'id'> & Partial<ProjectEntity>
+): Transactor<TofuDbSchema, (typeof PROJECT_STORE_NAME)[], 'readwrite', void> {
+	return async (tx) => {
+		const projectStore = tx.objectStore(PROJECT_STORE_NAME);
+		let project = await projectStore.get(projectUpdate.id);
+		if (!project) {
+			throw new Error(`cannot update project id ${projectUpdate.id}`);
+		}
+		partialAssign(project, projectUpdate);
+		let putResult = await projectStore.put(project);
+		return [void 0, [[PROJECT_STORE_NAME, [putResult]]]];
+	};
+}
+
 export function updateChapter(
-	id: number,
-	updater: (chapter: ChapterEntity) => ChapterEntity
-): Transactor<TofuDbSchema, 'chapters'[], 'readwrite', number | undefined> {
+	chapterUpdate: Pick<ChapterEntity, 'id'> & Partial<ChapterEntity>
+): Transactor<TofuDbSchema, (typeof CHAPTER_STORE_NAME)[], 'readwrite', void> {
 	return async (tx) => {
 		const chapterStore = tx.objectStore(CHAPTER_STORE_NAME);
-		let chapter = await chapterStore.get(id);
-		if (chapter) {
-			const putResult = await chapterStore.put(updater(chapter));
-			return [putResult, [[CHAPTER_STORE_NAME, [putResult]]]];
+		let chapter = await chapterStore.get(chapterUpdate.id);
+		if (!chapter) {
+			throw new Error(`cannot update chapter id ${chapterUpdate.id}`);
 		}
-		return [undefined];
+		partialAssign(chapter, chapterUpdate);
+		let putResult = await chapterStore.put(chapter);
+		return [void 0, [[CHAPTER_STORE_NAME, [putResult]]]];
 	};
 }

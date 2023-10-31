@@ -8,9 +8,11 @@
 		mapToResource,
 		getProjectById,
 		getChaptersByProjectId,
-		initializeProject
+		initializeProject,
+		updateProject
 	} from '~/lib/temp';
 	import type { ChapterEntity } from '~/data/database/entities/ChapterEntity';
+	import type { ProjectEntity } from '~/data/database/entities/ProjectEntity';
 
 	export let data: PageData;
 
@@ -25,6 +27,7 @@
 
 	$: inLibrary = project?.favorite ? project.favorite !== 0 : false;
 	$: cover = project ? `/api/project/cover?pid=${project.id}` : '';
+	$: showLoading =  isResourceSuccess($project$) && (!project || !project.initialized)
 
 	function getContinuationChapter(chapters: ChapterEntity[] | undefined) {
 		let i = chapters?.findIndex((chapter) => chapter.read !== 0);
@@ -74,26 +77,12 @@
 	}
 
 	function handleLibraryBtn() {
-		if (project) {
-			toggleFavorite(project.id);
-		}
+		project && toggleFavorite(project);
 	}
 
-	function toggleFavorite(projectId: number) {
+	function toggleFavorite(project: ProjectEntity) {
 		db.mutate([PROJECT_STORE_NAME])
-			.handledBy(async (tx) => {
-				const projectStore = tx.objectStore(PROJECT_STORE_NAME);
-				let project = await projectStore.get(projectId);
-
-				if (project) {
-					project.favorite = project.favorite ? 0 : Date.now();
-					const putResult = await projectStore.put(project);
-
-					return [putResult, [[PROJECT_STORE_NAME, [putResult]]]];
-				}
-
-				return [undefined];
-			})
+			.handledBy(updateProject({ id: project.id, favorite: project.favorite ? 0 : Date.now() }))
 			.exec();
 	}
 </script>
@@ -102,7 +91,7 @@
 	<title>{project?.name || ''}</title>
 </svelte:head>
 
-{#if !project?.initialized}
+{#if showLoading}
 	<div class="fixed left-1/2 top-4 z-10 -translate-x-5" transition:fade={{ duration: 150 }}>
 		<span class="loading loading-dots loading-lg" />
 	</div>

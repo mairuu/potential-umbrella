@@ -83,12 +83,7 @@
 
 	afterNavigate(() => {
 		db.mutate([CHAPTER_STORE_NAME])
-			.handledBy(
-				updateChapter(cid, (chapter) => {
-					chapter.read = Date.now();
-					return chapter;
-				})
-			)
+			.handledBy(updateChapter({ id: cid, read: Date.now() }))
 			.exec();
 	});
 
@@ -97,12 +92,7 @@
 
 		return db
 			.mutate([CHAPTER_STORE_NAME])
-			.handledBy(
-				updateChapter(cid, (chapter) => {
-					chapter.progress = progress;
-					return chapter;
-				})
-			)
+			.handledBy(updateChapter({ id: cid, progress }))
 			.exec();
 	});
 
