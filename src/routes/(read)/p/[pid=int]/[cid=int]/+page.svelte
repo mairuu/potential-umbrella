@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
 	import type { PageData } from './$types';
-	import { isResourceSuccess } from '~/lib/core/Resource';
 	import {
 		mapToResource,
 		getProjectById,
@@ -23,22 +22,21 @@
 	$: cid = data.chapterId;
 
 	$: project$ = mapToResource(getProjectById(pid).$());
-	$: chapters$ = mapToResource(getChaptersByProjectId(pid).$());
-
 	$: project = $project$.data || null;
+
+	$: chapters$ = mapToResource(getChaptersByProjectId(pid).$());
 	$: chapters = $chapters$.data?.sort((a, b) => b.no - a.no) || null;
 
 	$: content = fetchChapterContent({ chapterId: cid, projectId: pid });
 	$: chapterNavigation = getChapterNavigation(cid, chapters);
+
 	$: progress = chapterNavigation?.current.progress;
 	$: if (progress) content.then(() => tick()).then(() => restoreProgress(cid, progress!));
 
-	$: if (isResourceSuccess($project$)) {
-		const project = $project$.data;
-
-		if (!project || !project.initialized) {
-			initializeProject(pid);
-		}
+	$: needInitilizeProject =
+		$project$.isSucess() && (!$project$.data || !$project$.data.initialized);
+	$: if (needInitilizeProject) {
+		initializeProject(pid);
 	}
 
 	let showNav = true;
@@ -88,11 +86,8 @@
 	});
 
 	beforeNavigate(() => {
-		const progress = calculateProgress();
-
-		return db
-			.mutate([CHAPTER_STORE_NAME])
-			.handledBy(updateChapter({ id: cid, progress }))
+		db.mutate([CHAPTER_STORE_NAME])
+			.handledBy(updateChapter({ id: cid, progress: calculateProgress() }))
 			.exec();
 	});
 

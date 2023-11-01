@@ -2,7 +2,6 @@
 	import { PROJECT_STORE_NAME } from '~/data/database/TofuDbSchema';
 	import { db } from '~/module';
 	import type { PageData } from './$types';
-	import { isResourceSuccess } from '~/lib/core/Resource';
 	import { fade } from 'svelte/transition';
 	import {
 		mapToResource,
@@ -27,7 +26,11 @@
 
 	$: inLibrary = project?.favorite ? project.favorite !== 0 : false;
 	$: cover = project ? `/api/project/cover?pid=${project.id}` : '';
-	$: showLoading =  isResourceSuccess($project$) && (!project || !project.initialized)
+	$: needInitilizeProject =
+		$project$.isSucess() && (!$project$.data || !$project$.data.initialized);
+	$: if (needInitilizeProject) {
+		initializeProject(pid);
+	}
 
 	function getContinuationChapter(chapters: ChapterEntity[] | undefined) {
 		let i = chapters?.findIndex((chapter) => chapter.read !== 0);
@@ -49,14 +52,6 @@
 			href: chapter ? `/p/${chapter.pid}/${chapter.id}` : '.',
 			disabled: label === ''
 		};
-	}
-
-	$: if (isResourceSuccess($project$)) {
-		const project = $project$.data;
-
-		if (!project || !project.initialized) {
-			initializeProject(pid);
-		}
 	}
 
 	const dateFormat = new Intl.DateTimeFormat('en-US', {
@@ -91,7 +86,7 @@
 	<title>{project?.name || ''}</title>
 </svelte:head>
 
-{#if showLoading}
+{#if needInitilizeProject}
 	<div class="fixed left-1/2 top-4 z-10 -translate-x-5" transition:fade={{ duration: 150 }}>
 		<span class="loading loading-dots loading-lg" />
 	</div>

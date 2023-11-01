@@ -8,7 +8,6 @@
 	import { db } from '~/module';
 	import { groupBy, mapToResource, updateChapter } from '~/lib/temp';
 	import type { ProjectEntity } from '~/data/database/entities/ProjectEntity';
-	import { isResourcePending, isResourceSuccess } from '~/lib/core/Resource';
 
 	const fa = new Intl.DateTimeFormat(undefined, {
 		hour: 'numeric',
@@ -22,7 +21,6 @@
 	});
 
 	const readChapters$ = mapToResource(getReadChapters().$());
-	$: readChapters = $readChapters$.data || [];
 
 	type ProjectChapter = { project: ProjectEntity; chapter: ChapterEntity };
 
@@ -75,7 +73,8 @@
 
 	<div class="my-6 border-b-4 border-base-content/10" />
 
-	{#if isResourceSuccess($readChapters$)}
+	{#if $readChapters$.isSucess()}
+		{@const readChapters = $readChapters$.data}
 		{#if readChapters.length}
 			<div class="mx-4 my-6 flex flex-col gap-3 md:mx-0">
 				{#each Object.entries(groupBy(readChapters, ({ chapter }) => {

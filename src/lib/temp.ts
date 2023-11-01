@@ -1,4 +1,4 @@
-import { map, startWith, type Observable } from 'rxjs';
+import { map, startWith, type Observable, catchError, of } from 'rxjs';
 import {
 	CHAPTER_STORE_INDEX_PROJECT,
 	CHAPTER_STORE_NAME,
@@ -6,12 +6,12 @@ import {
 	type TofuDbSchema
 } from '~/data/database/TofuDbSchema';
 import type { ChapterEntity } from '~/data/database/entities/ChapterEntity';
-import { resourcePending, resourceSuccess, type Resource } from './core/Resource';
 import type { Transactor } from './database/Transactor';
 import { db } from '~/module';
 import type { ProjectType } from '~/domain/project/ProjectType';
 import type { ProjectGenre } from '~/domain/project/ProjectGenre';
 import type { ProjectEntity } from '~/data/database/entities/ProjectEntity';
+import { resourceSucess, type Resource, resourceLoading, resourceError } from './util/Resource';
 
 export function groupBy<K extends string | symbol, T>(
 	items: T[],
@@ -35,7 +35,11 @@ export function partialAssign<T extends object>(target: T, partial: Partial<T>) 
 }
 
 export function mapToResource<T>(observable: Observable<T>): Observable<Resource<T>> {
-	return observable.pipe(map(resourceSuccess), startWith(resourcePending(null)));
+	return observable.pipe(
+		map(resourceSucess),
+		startWith(resourceLoading<T>(null)),
+		catchError((err) => of(resourceError<T>(err)))
+	);
 }
 
 export function getProjectById(projectId: number) {
