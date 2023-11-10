@@ -216,11 +216,11 @@
 			</div>
 		{/await}
 	{:else}
-			<div class="mx-4 my-6 md:mx-0">
-				<div class="flex flex-col items-center pt-[20vh]">
-					<span class="inline-block text-4xl"> (＾▽＾) </span>
-					<span class="pt-4"> Fill in keywords, Enter, Explore! </span>
-				</div>
+		<div class="mx-4 my-6 md:mx-0">
+			<div class="flex flex-col items-center pt-[20vh]">
+				<span class="inline-block text-4xl"> (＾▽＾) </span>
+				<span class="pt-4"> Fill in keywords, Enter, Explore! </span>
 			</div>
+		</div>
 	{/if}
 </div>
