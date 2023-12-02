@@ -7,7 +7,7 @@ export function decrypt(str: string): string {
 	return CryptoJS.AES.decrypt(str, KEY).toString(CryptoJS.enc.Utf8);
 }
 
-export async function decryptResponseAsJson(res: Response): any {
+export async function decryptResponseAsJson(res: Response): Promise<any> {
 	if (!res.ok) {
 		throw new Error('');
 	}

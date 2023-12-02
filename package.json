@@ -8,13 +8,14 @@
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"lint": "prettier --check . --plugin prettier-plugin-svelte --plugin prettier-plugin-tailwindcss",
-		"format": "prettier --write . --plugin prettier-plugin-svelte --plugin prettier-plugin-tailwindcss"
+		"lint": "prettier --check .",
+		"format": "prettier --write ."
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^2.0.0",
 		"@sveltejs/kit": "^1.20.4",
 		"@tailwindcss/typography": "^0.5.10",
+		"@types/crypto-js": "^4.2.1",
 		"autoprefixer": "^10.4.16",
 		"daisyui": "^3.8.3",
 		"postcss": "^8.4.31",
