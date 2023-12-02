@@ -1,4 +1,5 @@
 import { error, type RequestHandler } from '@sveltejs/kit';
+import { decryptResponseAsJson } from '~/lib/util/Decode';
 
 export const GET: RequestHandler = async ({ url }) => {
 	// https://www.nekopost.net/api/project/latestChapter?t=m&p=0&s=12
@@ -35,7 +36,7 @@ export const GET: RequestHandler = async ({ url }) => {
 				coverVersion: number;
 				status: number;
 		  }[]
-		| null = await response.json();
+		| null = await decryptResponseAsJson(response);
 
 	const latests =
 		model?.map((item) => ({

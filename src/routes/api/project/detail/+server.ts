@@ -1,4 +1,5 @@
 import { error, type RequestHandler } from '@sveltejs/kit';
+import { decryptResponseAsJson } from '~/lib/util/Decode';
 
 function projectTypeRecognition(type: string) {
 	switch (type) {
@@ -74,7 +75,7 @@ export const GET: RequestHandler = async ({ url }) => {
 			title: string;
 			category: number;
 		}>;
-	} = await response.json();
+	} = await decryptResponseAsJson(response);
 
 	if (!model.project[0]) {
 		throw error(404, { message: 'project not found' });

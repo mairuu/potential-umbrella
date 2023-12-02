@@ -1,4 +1,5 @@
 import { error, type RequestHandler } from '@sveltejs/kit';
+import { decryptResponseAsJson } from '~/lib/util/Decode';
 
 export const GET: RequestHandler = async ({ url }) => {
 	const projectId = parseInt(url.searchParams.get('pid') || '');
@@ -8,10 +9,11 @@ export const GET: RequestHandler = async ({ url }) => {
 		throw error(400);
 	}
 
-	const response = await fetch(
-		`https://www.osemocphoto.com/collectManga/${projectId}/${chapterId}/${projectId}_${chapterId}.json`,
-		{ headers: { referer: 'https://www.nekopost.net/' } }
-	);
+	const response = await fetch(`https://www.nekopost.net/api/project/chapterInfo`, {
+		method: 'POST',
+		headers: { referer: 'https://www.nekopost.net/', origin: 'https://www.nekopost.net' },
+		body: JSON.stringify({ c: chapterId, p: projectId.toString() })
+	});
 	const model: {
 		projectId: string;
 		projectType: string;
@@ -34,12 +36,11 @@ export const GET: RequestHandler = async ({ url }) => {
 		}>;
 		novelContent?: string;
 		pageText?: string;
-	} = await response.json();
+	} = await decryptResponseAsJson(response);
 
 	if (!(model.novelContent || model.pageText) && !model.pageItem) {
 		throw error(500, { message: 'no content' });
 	}
-
 	return Response.json(
 		{
 			content:

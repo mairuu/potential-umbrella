@@ -1,5 +1,6 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { projectGenreIdLookup, type ProjectGenre } from '~/domain/project/ProjectGenre';
+import { decryptResponseAsJson } from '~/lib/util/Decode';
 
 export const GET: RequestHandler = async ({ url }) => {
 	const keyword = url.searchParams.get('keyword') || '';
@@ -31,7 +32,7 @@ export const GET: RequestHandler = async ({ url }) => {
 		views: number;
 		lastUpdate: string;
 		status: number;
-	}> = await response.json();
+	}> = await decryptResponseAsJson(response);
 
 	const results = model.map((e) => ({ id: e.projectId, name: e.projectName }));
 
