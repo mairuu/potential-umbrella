@@ -18,14 +18,14 @@ export const GET: RequestHandler = async ({ url }) => {
 		genre: genres,
 		type: types,
 		order: 'project',
-    // it's good enough. 
+		// it's good enough.
 		pageNo: 1
 	};
 
 	const response = await fetch('https://www.nekopost.net/api/explore/search', {
 		headers: { origin: 'https://www.nekopost.net', referer: 'https://www.nekopost.net' },
 		method: 'POST',
-		body: JSON.stringify(body),
+		body: JSON.stringify(body)
 	});
 
 	const model: {

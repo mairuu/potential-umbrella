@@ -1,6 +1,7 @@
 import { map, startWith, type Observable, catchError, of } from 'rxjs';
 import {
 	CHAPTER_STORE_INDEX_PROJECT,
+	CHAPTER_STORE_INDEX_PROJECT_KEYPATH,
 	CHAPTER_STORE_NAME,
 	PROJECT_STORE_NAME,
 	type TofuDbSchema
@@ -12,6 +13,7 @@ import type { ProjectType } from '~/domain/project/ProjectType';
 import type { ProjectGenre } from '~/domain/project/ProjectGenre';
 import type { ProjectEntity } from '~/data/database/entities/ProjectEntity';
 import { resourceSucess, type Resource, resourceLoading, resourceError } from './util/Resource';
+import { afterUpdate } from 'svelte';
 
 export function groupBy<K extends string | symbol, T>(
 	items: T[],
@@ -207,6 +209,121 @@ export async function initializeProject(projectId: number) {
 				[
 					[PROJECT_STORE_NAME, [await putProjectResult]],
 					[CHAPTER_STORE_NAME, await putChapterResults]
+				]
+			];
+		})
+		.exec();
+}
+
+export async function syncProject(projectId: number) {
+	const detail = await fetchProjectDetail({ projectId });
+
+	await db
+		.mutate([PROJECT_STORE_NAME, CHAPTER_STORE_NAME])
+		.handledBy(async (tx) => {
+			const projectStore = tx.objectStore(PROJECT_STORE_NAME);
+			const chapterStore = tx.objectStore(CHAPTER_STORE_NAME);
+
+			const localProject = await projectStore.get(projectId);
+			if (!localProject) {
+				return [undefined, []];
+			}
+
+			const affeftedProjectIds: number[] = [];
+			const affeftedChapterIds: number[] = [];
+			const jobs: Promise<unknown>[] = [];
+
+			// update project
+			const remoteProject = detail.project;
+			if (
+				localProject.name !== remoteProject.name ||
+				localProject.type !== remoteProject.type ||
+				localProject.genres.toString() !== remoteProject.genres.toString() ||
+				localProject.synopsis !== remoteProject.synopsis
+			) {
+				localProject.name = remoteProject.name;
+				localProject.type = remoteProject.type;
+				localProject.genres = remoteProject.genres;
+				localProject.synopsis = remoteProject.synopsis;
+
+				affeftedProjectIds.push(localProject.id);
+				jobs.push(projectStore.put(localProject));
+			}
+
+			// update chapters
+			const localChapters = await chapterStore.index(CHAPTER_STORE_INDEX_PROJECT).getAll(projectId);
+			const remoteChapters = detail.chapters;
+
+			const localChapterById = new Map<ChapterEntity['id'], ChapterEntity>();
+			for (const localChapter of localChapters) {
+				localChapterById.set(localChapter.id, localChapter);
+			}
+
+			const toAdds = [];
+			const toUpdates = [];
+
+			for (const remoteChapter of remoteChapters) {
+				const localChapter = localChapterById.get(remoteChapter.id);
+				if (!localChapter) {
+					toAdds.push(remoteChapter);
+					continue;
+				}
+				localChapterById.delete(localChapter.id);
+
+				if (
+					localChapter.name !== remoteChapter.name ||
+					localChapter.provider !== remoteChapter.provider
+				) {
+					toUpdates.push([localChapter, remoteChapter] as const);
+				}
+			}
+
+			const toDeletes = [...localChapterById.values()];
+
+			// dispatch
+
+			for (const toAdd of toAdds) {
+				const chapter: ChapterEntity = {
+					id: 0,
+					pid: 0,
+					no: 0,
+					name: '',
+					read: 0,
+					create: 0,
+					progress: 0,
+					provider: ''
+				};
+
+				chapter.id = toAdd.id;
+				chapter.pid = detail.project.id;
+				chapter.no = toAdd.no;
+				chapter.name = toAdd.name;
+				chapter.create = toAdd.create;
+				chapter.provider = toAdd.provider;
+
+				affeftedChapterIds.push(chapter.id);
+				jobs.push(chapterStore.put(chapter));
+			}
+
+			for (const [local, remote] of toUpdates) {
+				local.name = remote.name;
+				local.provider = remote.provider;
+				affeftedChapterIds.push(local.id);
+				jobs.push(chapterStore.put(local));
+			}
+
+			for (const toDelete of toDeletes) {
+				affeftedChapterIds.push(toDelete.id);
+				jobs.push(chapterStore.delete(toDelete.id));
+			}
+
+			await Promise.all(jobs);
+
+			return [
+				undefined,
+				[
+					[PROJECT_STORE_NAME, affeftedProjectIds],
+					[CHAPTER_STORE_NAME, affeftedChapterIds]
 				]
 			];
 		})
