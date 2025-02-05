@@ -8,6 +8,7 @@
 	import { db } from '~/module';
 	import { groupBy, mapToResource, updateChapter } from '~/lib/temp';
 	import type { ProjectEntity } from '~/data/database/entities/ProjectEntity';
+	import { TransactorResultBuilder } from '~/lib/database/Transactor';
 
 	const fa = new Intl.DateTimeFormat(undefined, {
 		hour: 'numeric',
@@ -45,7 +46,9 @@
 				cursor = await cursor.continue();
 			}
 
-			return arr;
+			return new TransactorResultBuilder()
+                .withValue(arr)
+                .build();
 		});
 	}
 

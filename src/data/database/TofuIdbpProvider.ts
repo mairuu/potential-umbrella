@@ -48,5 +48,9 @@ async function openTofuDb() {
 }
 
 export class TofuIdbpProvider implements IdbpProvider<TofuDbSchema> {
-	idbp: Promise<IDBPDatabase<TofuDbSchema>> = openTofuDb();
+	private _idbp: Promise<IDBPDatabase<TofuDbSchema>> = openTofuDb();
+
+	getDatabase(): Promise<IDBPDatabase<TofuDbSchema>> {
+		return this._idbp;
+	}
 }

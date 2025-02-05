@@ -1,13 +1,11 @@
 import type { DBSchema, StoreNames } from 'idb';
 import { Subject, type Observable } from 'rxjs';
-import type { Changes } from './Changes';
+import { Changes } from './Changes';
 import type { Database } from './Database';
 import type { IdbpProvider } from './IdbpProvider';
 import type { OpeartionBuilder } from './OperationBuilder';
 import { OpeartionBuilderImpl } from './OperationBuilderImpl';
 import type { Query } from './Query';
-import type { TransactorResult } from './Transactor';
-import { hasChanged } from './Changes';
 
 export class DatabaseImpl<DbTypes extends DBSchema> implements Database<DbTypes> {
 	private _changes$ = new Subject<Changes>();
@@ -16,7 +14,7 @@ export class DatabaseImpl<DbTypes extends DBSchema> implements Database<DbTypes>
 		private _provider: IdbpProvider<DbTypes>,
 		private _bc: BroadcastChannel
 	) {
-		_bc.onmessage = (ev) => this._changes$.next(ev.data);
+		_bc.onmessage = (ev) => this._changes$.next(Changes.deSerialize(ev.data));
 	}
 
 	query<Stores extends ArrayLike<StoreNames<DbTypes>>>(
@@ -36,23 +34,17 @@ export class DatabaseImpl<DbTypes extends DBSchema> implements Database<DbTypes>
 		Mode extends IDBTransactionMode,
 		Value
 	>(query: Query<DbTypes, Stores, Mode, Value>): Promise<Value> {
-		const db = await this._provider.idbp;
+		const db = await this._provider.getDatabase();
 		const tx = db.transaction(query.stores, query.mode);
-		const result = await query.transactor(tx);
+		const [value, changes] = await query.transactor(tx);
 
-		if (tx.mode === 'readonly') {
-			return result as Awaited<TransactorResult<'readonly', Value>>;
-		} else {
-			const [value, changes] = result as Awaited<TransactorResult<'readwrite', Value>>;
-
-			if (changes) {
-				tx.done.then(() => {
-					this.notifyChanges(changes);
-				});
-			}
-
-			return value;
+		if (changes.valid()) {
+			tx.done.then(() => {
+				this.notifyChanges(changes);
+			});
 		}
+
+		return value;
 	}
 
 	changes(): Observable<Changes> {
@@ -60,11 +52,7 @@ export class DatabaseImpl<DbTypes extends DBSchema> implements Database<DbTypes>
 	}
 
 	notifyChanges(changes: Changes): void {
-		if (!hasChanged(changes)) {
-			return;
-		}
-
 		this._changes$.next(changes);
-		this._bc.postMessage(changes);
+		this._bc.postMessage(changes.serialize());
 	}
 }

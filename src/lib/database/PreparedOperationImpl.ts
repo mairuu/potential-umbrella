@@ -25,16 +25,23 @@ export class PreparedOperationImpl<
 					return true;
 				}
 
-				const observing = this._observing;
+				if (!changes.valid()) {
+					return false;
+				}
 
-				return changes.some(([affectedStoreName, affectedKeys]) => {
-					return observing.some(([observingStoreName, observingRange]) => {
-						return (
-							affectedStoreName === observingStoreName &&
-							(observingRange === null || affectedKeys.some((key) => observingRange.includes(key)))
-						);
-					});
-				});
+				for (const [observingStoreName, observingRange] of this._observing) {
+					const change = changes.get(observingStoreName);
+					if (!change) {
+						continue;
+					}
+					const shouldUpdate =
+						observingRange === null || change.some((key) => observingRange.includes(key));
+					if (shouldUpdate) {
+						return true;
+					}
+				}
+
+				return false;
 			}),
 			switchMap(() => this.exec())
 		);

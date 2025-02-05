@@ -1,19 +1,17 @@
 import { map, startWith, type Observable, catchError, of } from 'rxjs';
 import {
 	CHAPTER_STORE_INDEX_PROJECT,
-	CHAPTER_STORE_INDEX_PROJECT_KEYPATH,
 	CHAPTER_STORE_NAME,
 	PROJECT_STORE_NAME,
 	type TofuDbSchema
 } from '~/data/database/TofuDbSchema';
 import type { ChapterEntity } from '~/data/database/entities/ChapterEntity';
-import type { Transactor } from './database/Transactor';
+import { TransactorResultBuilder, type Transactor } from './database/Transactor';
 import { db } from '~/module';
 import type { ProjectType } from '~/domain/project/ProjectType';
 import type { ProjectGenre } from '~/domain/project/ProjectGenre';
 import type { ProjectEntity } from '~/data/database/entities/ProjectEntity';
 import { resourceSucess, type Resource, resourceLoading, resourceError } from './util/Resource';
-import { afterUpdate } from 'svelte';
 
 export function groupBy<K extends string | symbol, T>(
 	items: T[],
@@ -48,16 +46,23 @@ export function getProjectById(projectId: number) {
 	return db
 		.query([PROJECT_STORE_NAME])
 		.observeOn(PROJECT_STORE_NAME, projectId)
-		.handledBy((tx) => tx.objectStore(PROJECT_STORE_NAME).get(projectId));
+		.handledBy(async (tx) => {
+			const project = await tx.objectStore(PROJECT_STORE_NAME).get(projectId);
+			return new TransactorResultBuilder().withValue(project).build();
+		});
 }
 
-export function getChaptersByProjectId(id: number) {
+export function getChaptersByProjectId(projectId: number) {
 	return db
 		.query([CHAPTER_STORE_NAME])
 		.observeOn(CHAPTER_STORE_NAME)
-		.handledBy(async (tx) =>
-			tx.objectStore(CHAPTER_STORE_NAME).index(CHAPTER_STORE_INDEX_PROJECT).getAll(id)
-		);
+		.handledBy(async (tx) => {
+			const chapters = tx
+				.objectStore(CHAPTER_STORE_NAME)
+				.index(CHAPTER_STORE_INDEX_PROJECT)
+				.getAll(projectId);
+			return new TransactorResultBuilder().withValue(chapters).build();
+		});
 }
 
 export async function searchProjects(
@@ -204,13 +209,10 @@ export async function initializeProject(projectId: number) {
 				})
 			);
 
-			return [
-				undefined,
-				[
-					[PROJECT_STORE_NAME, [await putProjectResult]],
-					[CHAPTER_STORE_NAME, await putChapterResults]
-				]
-			];
+			return new TransactorResultBuilder()
+				.withChanges(PROJECT_STORE_NAME, await putProjectResult)
+				.withChanges(CHAPTER_STORE_NAME, await putChapterResults)
+				.build();
 		})
 		.exec();
 }
@@ -226,7 +228,7 @@ export async function syncProject(projectId: number) {
 
 			const localProject = await projectStore.get(projectId);
 			if (!localProject) {
-				return [undefined, []];
+				return new TransactorResultBuilder().build();
 			}
 
 			const affeftedProjectIds: number[] = [];
@@ -319,13 +321,10 @@ export async function syncProject(projectId: number) {
 
 			await Promise.all(jobs);
 
-			return [
-				undefined,
-				[
-					[PROJECT_STORE_NAME, affeftedProjectIds],
-					[CHAPTER_STORE_NAME, affeftedChapterIds]
-				]
-			];
+			return new TransactorResultBuilder()
+				.withChanges(PROJECT_STORE_NAME, affeftedProjectIds)
+				.withChanges(CHAPTER_STORE_NAME, affeftedChapterIds)
+				.build();
 		})
 		.exec();
 }
@@ -354,7 +353,15 @@ export function remoteToLocalProject(
 			return project.id;
 		});
 
-		return [await Promise.all(putResults) /* silence */];
+		const affeftedProjectIds = await Promise.all(putResults);
+
+		return (
+			new TransactorResultBuilder()
+				// silence
+				// .withChanges(PROJECT_STORE_NAME, affeftedProjectIds)
+				.withValue(affeftedProjectIds)
+				.build()
+		);
 	};
 }
 
@@ -368,8 +375,8 @@ export function updateProject(
 			throw new Error(`cannot update project id ${projectUpdate.id}`);
 		}
 		partialAssign(project, projectUpdate);
-		let putResult = await projectStore.put(project);
-		return [void 0, [[PROJECT_STORE_NAME, [putResult]]]];
+		const affectedProjectId = await projectStore.put(project);
+		return new TransactorResultBuilder().withChanges(PROJECT_STORE_NAME, affectedProjectId).build();
 	};
 }
 
@@ -383,7 +390,7 @@ export function updateChapter(
 			throw new Error(`cannot update chapter id ${chapterUpdate.id}`);
 		}
 		partialAssign(chapter, chapterUpdate);
-		let putResult = await chapterStore.put(chapter);
-		return [void 0, [[CHAPTER_STORE_NAME, [putResult]]]];
+		const affeftedChapterId = await chapterStore.put(chapter);
+		return new TransactorResultBuilder().withChanges(PROJECT_STORE_NAME, affeftedChapterId).build();
 	};
 }
