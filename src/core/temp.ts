@@ -4,14 +4,14 @@ import {
 	CHAPTER_STORE_NAME,
 	PROJECT_STORE_NAME,
 	type TofuDbSchema
-} from '~/data/database/TofuDbSchema';
-import type { ChapterEntity } from '~/data/database/entities/ChapterEntity';
+} from '~/data/schema/TofuDbSchema';
+import type { ChapterEntity } from '~/data/entities/ChapterEntity';
 import { TransactorResultBuilder, type Transactor } from './database/Transactor';
 import { db } from '~/module';
-import type { ProjectType } from '~/domain/project/ProjectType';
-import type { ProjectGenre } from '~/domain/project/ProjectGenre';
-import type { ProjectEntity } from '~/data/database/entities/ProjectEntity';
-import { resourceSucess, type Resource, resourceLoading, resourceError } from './util/Resource';
+import type { ProjectType } from '~/services/project/projectTypes';
+import type { ProjectGenre } from '~/services/project/projectGenres';
+import type { ProjectEntity } from '~/data/entities/ProjectEntity';
+import { resourceSucess, type Resource, resourceLoading, resourceError } from '~/utils/resource';
 
 export function groupBy<K extends string | symbol, T>(
 	items: T[],
@@ -57,7 +57,7 @@ export function getChaptersByProjectId(projectId: number) {
 		.query([CHAPTER_STORE_NAME])
 		.observeOn(CHAPTER_STORE_NAME)
 		.handledBy(async (tx) => {
-			const chapters = tx
+			const chapters = await tx
 				.objectStore(CHAPTER_STORE_NAME)
 				.index(CHAPTER_STORE_INDEX_PROJECT)
 				.getAll(projectId);

@@ -1,4 +1,4 @@
 import type { ParamMatcher } from '@sveltejs/kit';
-import { isProjectType } from '~/domain/project/ProjectType';
+import { isProjectType } from '~/services/project/projectTypes';
 
 export const match: ParamMatcher = isProjectType;

@@ -1,5 +1,5 @@
 import { error, type RequestHandler } from '@sveltejs/kit';
-import { decryptResponseAsJson } from '~/lib/util/Decode';
+import { decryptResponseAsJson } from '~/utils/decode';
 
 function projectTypeRecognition(type: string) {
 	switch (type) {

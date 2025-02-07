@@ -1,5 +1,5 @@
 import { error, type RequestHandler } from '@sveltejs/kit';
-import { decryptResponseAsJson } from '~/lib/util/Decode';
+import { decryptResponseAsJson } from '~/utils/decode';
 
 export const GET: RequestHandler = async ({ url }) => {
 	const projectId = parseInt(url.searchParams.get('pid') || '');

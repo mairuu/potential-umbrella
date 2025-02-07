@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { PROJECT_STORE_NAME } from '~/data/database/TofuDbSchema';
+	import { PROJECT_STORE_NAME } from '~/data/schema/TofuDbSchema';
 	import { db } from '~/module';
 	import ProjectCard from './ProjectCard.svelte';
-	import { fetchLatestProjects, remoteToLocalProject } from '~/lib/temp';
-	import type { ProjectType } from '~/domain/project/ProjectType';
+	import { fetchLatestProjects, remoteToLocalProject } from '~/core/temp';
+	import type { ProjectType } from '~/services/project/projectTypes';
 
 	export let n: number;
 	export let type: ProjectType;

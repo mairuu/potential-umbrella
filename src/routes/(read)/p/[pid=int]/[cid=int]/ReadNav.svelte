@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { ChapterEntity } from '~/data/database/entities/ChapterEntity';
+	import type { ChapterEntity } from '~/data/entities/ChapterEntity';
 
 	export let chapterNavigation: Record<'previous' | 'current' | 'next', ChapterEntity> | undefined;
 

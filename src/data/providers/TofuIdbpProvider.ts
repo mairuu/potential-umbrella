@@ -1,5 +1,5 @@
 import { openDB, type IDBPDatabase } from 'idb';
-import type { IdbpProvider } from '~/lib/database/IdbpProvider';
+import type { IdbpProvider } from '~/core/database/IdbpProvider';
 import {
 	CHAPTER_STORE_INDEX_PROJECT,
 	CHAPTER_STORE_INDEX_PROJECT_KEYPATH,
@@ -12,7 +12,7 @@ import {
 	PROJECT_STORE_KEYPATH,
 	PROJECT_STORE_NAME,
 	type TofuDbSchema
-} from './TofuDbSchema';
+} from '../schema/TofuDbSchema';
 
 export const TOFU_DB_NAME = 'tofu-db';
 export const TOFU_DB_VERSION = 1;

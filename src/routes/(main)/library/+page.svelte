@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { PROJECT_STORE_INDEX_FAVORITE, PROJECT_STORE_NAME } from '~/data/database/TofuDbSchema';
+	import { PROJECT_STORE_INDEX_FAVORITE, PROJECT_STORE_NAME } from '~/data/schema/TofuDbSchema';
 	import { db } from '~/module';
-	import { mapToResource } from '~/lib/temp';
+	import { mapToResource } from '~/core/temp';
 	import LibraryCard from './LibraryCard.svelte';
-	import { TransactorResultBuilder } from '~/lib/database/Transactor';
+	import { TransactorResultBuilder } from '~/core/database/Transactor';
 
     function getAllFavorites() {
         return db

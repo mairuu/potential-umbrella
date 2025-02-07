@@ -3,12 +3,12 @@
 		CHAPTER_STORE_INDEX_READ,
 		CHAPTER_STORE_NAME,
 		PROJECT_STORE_NAME
-	} from '~/data/database/TofuDbSchema';
-	import type { ChapterEntity } from '~/data/database/entities/ChapterEntity';
+	} from '~/data/schema/TofuDbSchema';
+	import type { ChapterEntity } from '~/data/entities/ChapterEntity';
 	import { db } from '~/module';
-	import { groupBy, mapToResource, updateChapter } from '~/lib/temp';
-	import type { ProjectEntity } from '~/data/database/entities/ProjectEntity';
-	import { TransactorResultBuilder } from '~/lib/database/Transactor';
+	import { groupBy, mapToResource, updateChapter } from '~/core/temp';
+	import type { ProjectEntity } from '~/data/entities/ProjectEntity';
+	import { TransactorResultBuilder } from '~/core/database/Transactor';
 
 	const fa = new Intl.DateTimeFormat(undefined, {
 		hour: 'numeric',

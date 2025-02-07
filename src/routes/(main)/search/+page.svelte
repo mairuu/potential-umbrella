@@ -4,11 +4,11 @@
 	import ProjectCard from '../ProjectCard.svelte';
 	import FlagsToggler from './FlagsToggler.svelte';
 	import type { PageData } from './$types';
-	import { remoteToLocalProject, searchProjects } from '~/lib/temp';
+	import { remoteToLocalProject, searchProjects } from '~/core/temp';
 	import { db } from '~/module';
-	import { PROJECT_STORE_NAME } from '~/data/database/TofuDbSchema';
-	import { projectTypes, type ProjectType } from '~/domain/project/ProjectType';
-	import { projectGenres, type ProjectGenre } from '~/domain/project/ProjectGenre';
+	import { PROJECT_STORE_NAME } from '~/data/schema/TofuDbSchema';
+	import { projectTypes, type ProjectType } from '~/services/project/projectTypes';
+	import { projectGenres, type ProjectGenre } from '~/services/project/projectGenres';
 
 	export let data: PageData;
 	$: onSearchParamsChanged(data.searchProjectParams);

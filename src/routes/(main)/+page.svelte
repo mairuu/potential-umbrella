@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { projectTypes } from '~/domain/project/ProjectType';
+	import { projectTypes } from '~/services/project/projectTypes';
 	import HomeGallery from './HomeGallery.svelte';
 
 	let w = 0;

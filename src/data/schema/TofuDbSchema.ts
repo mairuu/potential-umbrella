@@ -1,6 +1,6 @@
 import type { DBSchema } from 'idb';
-import type { ChapterEntity } from './entities/ChapterEntity';
-import type { ProjectEntity } from './entities/ProjectEntity';
+import type { ChapterEntity } from '~/data/entities/ChapterEntity';
+import type { ProjectEntity } from '~/data/entities/ProjectEntity';
 
 export const PROJECT_STORE_NAME = 'projects' as const;
 export const PROJECT_STORE_KEYPATH = 'id' as const;

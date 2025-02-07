@@ -1,6 +1,6 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { projectGenreIdLookup, type ProjectGenre } from '~/domain/project/ProjectGenre';
-import { decryptResponseAsJson } from '~/lib/util/Decode';
+import { projectGenreIdLookup, type ProjectGenre } from '~/services/project/projectGenres';
+import { decryptResponseAsJson } from '~/utils/decode';
 
 export const GET: RequestHandler = async ({ url }) => {
 	const keyword = url.searchParams.get('keyword') || '';

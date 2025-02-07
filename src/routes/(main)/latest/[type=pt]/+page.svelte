@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { tick } from 'svelte';
 	import type { PageData, Snapshot } from './$types';
-	import { fetchLatestProjects, remoteToLocalProject } from '~/lib/temp';
-	import { PROJECT_STORE_NAME } from '~/data/database/TofuDbSchema';
+	import { fetchLatestProjects, remoteToLocalProject } from '~/core/temp';
+	import { PROJECT_STORE_NAME } from '~/data/schema/TofuDbSchema';
 	import { db } from '~/module';
 	import ProjectCard from '../../ProjectCard.svelte';
 	import { afterNavigate, disableScrollHandling } from '$app/navigation';
-	import type { ProjectType } from '~/domain/project/ProjectType';
+	import type { ProjectType } from '~/services/project/projectTypes';
 
 	export let data: PageData;
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { PROJECT_STORE_NAME } from '~/data/database/TofuDbSchema';
+	import { PROJECT_STORE_NAME } from '~/data/schema/TofuDbSchema';
 	import { db } from '~/module';
 	import type { PageData } from './$types';
 	import { fade } from 'svelte/transition';
@@ -10,9 +10,9 @@
 		initializeProject,
 		updateProject,
         syncProject
-	} from '~/lib/temp';
-	import type { ChapterEntity } from '~/data/database/entities/ChapterEntity';
-	import type { ProjectEntity } from '~/data/database/entities/ProjectEntity';
+	} from '~/core/temp';
+	import type { ChapterEntity } from '~/data/entities/ChapterEntity';
+	import type { ProjectEntity } from '~/data/entities/ProjectEntity';
 
 	export let data: PageData;
 
@@ -22,6 +22,7 @@
 	$: project = $project$.data;
 
 	$: chapters$ = mapToResource(getChaptersByProjectId(pid).$());
+    $: console.log($chapters$);
 	$: chapters = $chapters$.data?.sort((a, b) => b.no - a.no);
 	$: continuation = getContinuationChapter(chapters);
 

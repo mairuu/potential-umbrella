@@ -1,4 +1,4 @@
-import type { ProjectType } from '~/domain/project/ProjectType';
+import type { ProjectType } from '~/services/project/projectTypes';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = ({ params }) => {

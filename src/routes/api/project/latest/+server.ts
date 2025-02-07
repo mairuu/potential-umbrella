@@ -1,5 +1,5 @@
 import { error, type RequestHandler } from '@sveltejs/kit';
-import { decryptResponseAsJson } from '~/lib/util/Decode';
+import { decryptResponseAsJson } from '~/utils/decode';
 
 export const GET: RequestHandler = async ({ url }) => {
 	// https://www.nekopost.net/api/project/latestChapter?t=m&p=0&s=12

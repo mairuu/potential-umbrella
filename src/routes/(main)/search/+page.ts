@@ -1,5 +1,5 @@
-import { isProjectGenre } from '~/domain/project/ProjectGenre';
-import { isProjectType } from '~/domain/project/ProjectType';
+import { isProjectGenre } from '~/services/project/projectGenres';
+import { isProjectType } from '~/services/project/projectTypes';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = ({ url }) => {

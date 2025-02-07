@@ -8,10 +8,10 @@
 		initializeProject,
 		fetchChapterContent,
 		updateChapter
-	} from '~/lib/temp';
+	} from '~/core/temp';
 	import { db } from '~/module';
-	import { CHAPTER_STORE_NAME } from '~/data/database/TofuDbSchema';
-	import type { ChapterEntity } from '~/data/database/entities/ChapterEntity';
+	import { CHAPTER_STORE_NAME } from '~/data/schema/TofuDbSchema';
+	import type { ChapterEntity } from '~/data/entities/ChapterEntity';
 	import { afterNavigate, beforeNavigate, disableScrollHandling } from '$app/navigation';
 	import LazyLoadImage from './LazyLoadImage.svelte';
 	import ReadNav from './ReadNav.svelte';

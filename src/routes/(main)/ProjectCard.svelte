@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getProjectById } from '~/lib/temp';
+	import { getProjectById } from '~/core/temp';
 
 	export let id: number;
 
