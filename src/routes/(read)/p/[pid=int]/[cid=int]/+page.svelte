@@ -6,12 +6,11 @@
 		getProjectById,
 		getChaptersByProjectId,
 		initializeProject,
-		fetchChapterContent,
 		updateChapter
 	} from '~/core/temp';
-	import { db } from '~/module';
-	import { CHAPTER_STORE_NAME } from '~/data/schema/TofuDbSchema';
-	import type { ChapterEntity } from '~/data/entities/ChapterEntity';
+	import { chapterApi, db } from '~/module';
+	import { CHAPTER_STORE_NAME } from '~/data/local/schema/TofuDbSchema';
+	import type { ChapterEntity } from '~/data/local/entities/ChapterEntity';
 	import { afterNavigate, beforeNavigate, disableScrollHandling } from '$app/navigation';
 	import LazyLoadImage from './LazyLoadImage.svelte';
 	import ReadNav from './ReadNav.svelte';
@@ -27,7 +26,7 @@
 	$: chapters$ = mapToResource(getChaptersByProjectId(pid).$());
 	$: chapters = $chapters$.data?.sort((a, b) => b.no - a.no) || null;
 
-	$: content = fetchChapterContent({ chapterId: cid, projectId: pid });
+	$: content = chapterApi.getContent({ chapterId: cid, projectId: pid });
 	$: chapterNavigation = getChapterNavigation(cid, chapters);
 
 	$: progress = chapterNavigation?.current.progress;

@@ -4,9 +4,9 @@
 	import ProjectCard from '../ProjectCard.svelte';
 	import FlagsToggler from './FlagsToggler.svelte';
 	import type { PageData } from './$types';
-	import { remoteToLocalProject, searchProjects } from '~/core/temp';
-	import { db } from '~/module';
-	import { PROJECT_STORE_NAME } from '~/data/schema/TofuDbSchema';
+	import { remoteToLocalProject } from '~/core/temp';
+	import { db, projectApi } from '~/module';
+	import { PROJECT_STORE_NAME } from '~/data/local/schema/TofuDbSchema';
 	import { projectTypes, type ProjectType } from '~/services/project/projectTypes';
 	import { projectGenres, type ProjectGenre } from '~/services/project/projectGenres';
 
@@ -40,9 +40,11 @@
 
 		const controller = new AbortController();
 		const filters = [...types, ...genres];
-		const items = searchProjects({ genres, keyword, types }, { signal: controller.signal }).then(
-			(remotes) => db.mutate([PROJECT_STORE_NAME]).handledBy(remoteToLocalProject(remotes)).exec()
-		);
+		const items = projectApi
+			.search({ genres, keyword, types }, { signal: controller.signal })
+			.then((remotes) =>
+				db.mutate([PROJECT_STORE_NAME]).handledBy(remoteToLocalProject(remotes)).exec()
+			);
 
 		return { items, controller, filters };
 	}

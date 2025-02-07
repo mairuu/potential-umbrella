@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { PROJECT_STORE_NAME } from '~/data/schema/TofuDbSchema';
-	import { db } from '~/module';
+	import { PROJECT_STORE_NAME } from '~/data/local/schema/TofuDbSchema';
+	import { db, projectApi } from '~/module';
 	import ProjectCard from './ProjectCard.svelte';
-	import { fetchLatestProjects, remoteToLocalProject } from '~/core/temp';
+	import { remoteToLocalProject } from '~/core/temp';
 	import type { ProjectType } from '~/services/project/projectTypes';
 
 	export let n: number;
@@ -11,7 +11,8 @@
 	let items: number[] = [];
 	let exists = new Set<number>();
 
-	$: fetchLatestProjects({ type })
+	$: projectApi
+		.getLatest({ type })
 		.then((latests) =>
 			db.mutate([PROJECT_STORE_NAME]).handledBy(remoteToLocalProject(latests)).exec()
 		)

@@ -1,5 +1,5 @@
 import { error, type RequestHandler } from '@sveltejs/kit';
-import { filterRequestHeaders, filterResponseHeaders } from '~/utils/image_forward';
+import { filterRequestHeaders, filterResponseHeaders } from '~/utils/imageForward';
 
 export const GET: RequestHandler = async ({ url, request }) => {
 	const file = url.searchParams.get('file');

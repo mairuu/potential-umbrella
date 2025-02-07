@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { PROJECT_STORE_NAME } from '~/data/schema/TofuDbSchema';
+	import { PROJECT_STORE_NAME } from '~/data/local/schema/TofuDbSchema';
 	import { db } from '~/module';
 	import type { PageData } from './$types';
 	import { fade } from 'svelte/transition';
@@ -11,8 +11,8 @@
 		updateProject,
 		syncProject
 	} from '~/core/temp';
-	import type { ChapterEntity } from '~/data/entities/ChapterEntity';
-	import type { ProjectEntity } from '~/data/entities/ProjectEntity';
+	import type { ChapterEntity } from '~/data/local/entities/ChapterEntity';
+	import type { ProjectEntity } from '~/data/local/entities/ProjectEntity';
 
 	export let data: PageData;
 

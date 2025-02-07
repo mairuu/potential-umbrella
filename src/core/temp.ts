@@ -4,13 +4,11 @@ import {
 	CHAPTER_STORE_NAME,
 	PROJECT_STORE_NAME,
 	type TofuDbSchema
-} from '~/data/schema/TofuDbSchema';
-import type { ChapterEntity } from '~/data/entities/ChapterEntity';
+} from '~/data/local/schema/TofuDbSchema';
+import type { ChapterEntity } from '~/data/local/entities/ChapterEntity';
 import { TransactorResultBuilder, type Transactor } from './database/Transactor';
-import { db } from '~/module';
-import type { ProjectType } from '~/services/project/projectTypes';
-import type { ProjectGenre } from '~/services/project/projectGenres';
-import type { ProjectEntity } from '~/data/entities/ProjectEntity';
+import { db, projectApi } from '~/module';
+import type { ProjectEntity } from '~/data/local/entities/ProjectEntity';
 import { resourceSucess, type Resource, resourceLoading, resourceError } from '~/utils/resource';
 
 export function groupBy<K extends string | symbol, T>(
@@ -65,96 +63,10 @@ export function getChaptersByProjectId(projectId: number) {
 		});
 }
 
-export async function searchProjects(
-	{
-		keyword = '',
-		genres = [],
-		types = []
-	}: { keyword?: string | null; genres?: ProjectGenre[] | null; types?: ProjectType[] | null },
-	{ signal }: { signal?: AbortSignal } = {}
-) {
-	const search = new URLSearchParams();
-	keyword?.length && search.set('keyword', keyword);
-	genres?.length && search.set('genres', genres.join('.'));
-	types?.length && search.set('types', types.join('.'));
-	search.sort();
-
-	const response = await fetch('/api/project/search?' + search.toString(), {
-		signal
-	});
-	const items: { id: number; name: string }[] = await response.json();
-	return items;
-}
-
-export async function fetchLatestProjects(
-	{ type, page = 0, takes = 12 }: { type: ProjectType; page?: number; takes?: number },
-	{ signal }: { signal?: AbortSignal } = {}
-) {
-	const search = new URLSearchParams();
-	search.set('type', type);
-	search.set('page', page.toString());
-	search.set('takes', takes.toString());
-	search.sort();
-
-	const response = await fetch('/api/project/latest?' + search.toString(), {
-		signal
-	});
-	const model: { id: number; name: string }[] = await response.json();
-	return model;
-}
-
-export async function fetchProjectDetail(
-	{ projectId }: { projectId: number },
-	{ signal }: { signal?: AbortSignal } = {}
-) {
-	const search = new URLSearchParams();
-	search.set('pid', projectId.toString());
-	search.sort();
-
-	const response = await fetch('/api/project/detail?' + search.toString(), {
-		signal
-	});
-	const model: {
-		project: {
-			id: number;
-			name: string;
-			type: string;
-			genres: string[];
-			synopsis: string;
-		};
-		chapters: Array<{
-			id: number;
-			no: number;
-			name: string;
-			provider: string;
-			create: number;
-		}>;
-	} = await response.json();
-	return model;
-}
-
-export async function fetchChapterContent(
-	{ projectId, chapterId }: { chapterId: number; projectId: number },
-	{ signal }: { signal?: AbortSignal } = {}
-) {
-	const serach = new URLSearchParams();
-	serach.set('pid', projectId.toString());
-	serach.set('cid', chapterId.toString());
-	serach.sort();
-
-	const response = await fetch(`/api/chapter/content?` + serach.toString(), {
-		signal
-	});
-	const model: {
-		content: string | { name: string; width: number; height: number }[];
-	} = await response.json();
-	return model;
-}
-
 export async function initializeProject(projectId: number) {
 	// Todo: Guard the initialization somehow.
 
-	const detail = await fetchProjectDetail({ projectId });
+	const detail = await projectApi.getDetail(projectId);
 
 	await db
 		.mutate([PROJECT_STORE_NAME, CHAPTER_STORE_NAME])
@@ -218,7 +130,7 @@ export async function initializeProject(projectId: number) {
 }
 
 export async function syncProject(projectId: number) {
-	const detail = await fetchProjectDetail({ projectId });
+	const detail = await projectApi.getDetail(projectId);
 
 	await db
 		.mutate([PROJECT_STORE_NAME, CHAPTER_STORE_NAME])

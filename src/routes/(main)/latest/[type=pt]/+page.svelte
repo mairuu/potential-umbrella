@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { tick } from 'svelte';
 	import type { PageData, Snapshot } from './$types';
-	import { fetchLatestProjects, remoteToLocalProject } from '~/core/temp';
-	import { PROJECT_STORE_NAME } from '~/data/schema/TofuDbSchema';
-	import { db } from '~/module';
+	import { remoteToLocalProject } from '~/core/temp';
+	import { PROJECT_STORE_NAME } from '~/data/local/schema/TofuDbSchema';
+	import { db, projectApi } from '~/module';
 	import ProjectCard from '../../ProjectCard.svelte';
 	import { afterNavigate, disableScrollHandling } from '$app/navigation';
 	import type { ProjectType } from '~/services/project/projectTypes';
@@ -42,7 +42,7 @@
 	}
 
 	async function fetchPage(type: ProjectType, page: number) {
-		const remoteProjects = await fetchLatestProjects({ type, page });
+		const remoteProjects = await projectApi.getLatest({ type, page });
 		const ids = await db
 			.mutate([PROJECT_STORE_NAME])
 			.handledBy(remoteToLocalProject(remoteProjects))
