@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import type { ChapterEntity } from '~/data/local/entities/ChapterEntity';
 
+    export let projectId: number;
 	export let chapterNavigation: Record<'previous' | 'current' | 'next', ChapterEntity> | undefined;
 
 	export let showNav: boolean;
@@ -46,7 +47,7 @@
 	class:hide-top={!showNav}
 >
 	<div class="flex h-14 items-center md:justify-between">
-		<a href="." class="btn btn-ghost no-animation h-full rounded-none px-4">
+		<a href="/p/{projectId}" class="btn btn-ghost no-animation h-full rounded-none px-4">
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				class="h-7 w-7"
@@ -79,12 +80,12 @@
 	<div class="flex h-14 items-center justify-end gap-4 px-4">
 		<div class="join gap-1">
 			<a
-				href={chapterNavigation?.previous ? `./${chapterNavigation.previous.id}` : '.'}
+				href={chapterNavigation?.previous ? `/p/${projectId}/${chapterNavigation.previous.id}/` : '.'}
 				class:btn-disabled={!chapterNavigation?.previous}
 				class="btn join-item btn-sm">Previous</a
 			>
 			<a
-				href={chapterNavigation?.next ? `./${chapterNavigation.next.id}` : '.'}
+				href={chapterNavigation?.next ? `/p/${projectId}/${chapterNavigation.next.id}/` : '.'}
 				class:btn-disabled={!chapterNavigation?.next}
 				class="btn join-item btn-sm">Next</a
 			>

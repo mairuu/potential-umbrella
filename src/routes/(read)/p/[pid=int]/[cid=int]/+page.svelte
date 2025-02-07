@@ -88,7 +88,7 @@
 	<title>{project?.name || ''} Ch. {chapterNavigation?.current.no || ''}</title>
 </svelte:head>
 
-<ReadNav bind:showNav {chapterNavigation} />
+<ReadNav bind:showNav {chapterNavigation} projectId={pid} />
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
