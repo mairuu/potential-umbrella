@@ -42,7 +42,7 @@ export class ProjectService {
 			.mutate([PROJECT_STORE_NAME])
 			.handledBy(async (tx) => {
 				const projectStore = tx.objectStore(PROJECT_STORE_NAME);
-				let project = await projectStore.get(projectUpdate.id);
+				const project = await projectStore.get(projectUpdate.id);
 				if (!project) {
 					throw new Error(`cannot update project id ${projectUpdate.id}`);
 				}

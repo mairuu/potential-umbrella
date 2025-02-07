@@ -27,7 +27,7 @@ export class ChapterService {
 			.mutate([CHAPTER_STORE_NAME])
 			.handledBy(async (tx) => {
 				const chapterStore = tx.objectStore(CHAPTER_STORE_NAME);
-				let chapter = await chapterStore.get(chapterUpdate.id);
+				const chapter = await chapterStore.get(chapterUpdate.id);
 				if (!chapter) {
 					throw new Error(`cannot update chapter id ${chapterUpdate.id}`);
 				}
@@ -62,8 +62,8 @@ export class ChapterService {
 				const chaptersStore = tx.objectStore(CHAPTER_STORE_NAME);
 				type ProjectChapter = { project: ProjectEntity; chapter: ChapterEntity };
 
-				let set: Set<number> = new Set();
-				let arr: ProjectChapter[] = [];
+				const set: Set<number> = new Set();
+				const arr: ProjectChapter[] = [];
 				let cursor = await chaptersStore
 					.index(CHAPTER_STORE_INDEX_READ)
 					.openCursor(IDBKeyRange.lowerBound(0, true), 'prev');
@@ -71,7 +71,7 @@ export class ChapterService {
 				while (cursor) {
 					if (!set.has(cursor.value.pid)) {
 						set.add(cursor.value.pid);
-						let project = await projectsStore.get(cursor.value.pid);
+						const project = await projectsStore.get(cursor.value.pid);
 						arr.push({ project: project!, chapter: cursor.value });
 					}
 
