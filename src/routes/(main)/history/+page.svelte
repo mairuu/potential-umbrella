@@ -46,9 +46,7 @@
 				cursor = await cursor.continue();
 			}
 
-			return new TransactorResultBuilder()
-                .withValue(arr)
-                .build();
+			return new TransactorResultBuilder().withValue(arr).build();
 		});
 	}
 

@@ -5,22 +5,19 @@
 	import LibraryCard from './LibraryCard.svelte';
 	import { TransactorResultBuilder } from '~/core/database/Transactor';
 
-    function getAllFavorites() {
-        return db
-            .query([PROJECT_STORE_NAME])
-            .observeOn(PROJECT_STORE_NAME)
-            .handledBy(async (tx) => {
-                const result = await tx
-                    .objectStore(PROJECT_STORE_NAME)
-                    .index(PROJECT_STORE_INDEX_FAVORITE)
-                    .getAllKeys(IDBKeyRange.lowerBound(0, true))
+	function getAllFavorites() {
+		return db
+			.query([PROJECT_STORE_NAME])
+			.observeOn(PROJECT_STORE_NAME)
+			.handledBy(async (tx) => {
+				const result = await tx
+					.objectStore(PROJECT_STORE_NAME)
+					.index(PROJECT_STORE_INDEX_FAVORITE)
+					.getAllKeys(IDBKeyRange.lowerBound(0, true));
 
-                return new TransactorResultBuilder()
-                    .withValue(result)
-                    .build()
-            }
-            );
-    }
+				return new TransactorResultBuilder().withValue(result).build();
+			});
+	}
 
 	const projectIds$ = mapToResource(getAllFavorites().$());
 </script>

@@ -9,7 +9,7 @@
 		getChaptersByProjectId,
 		initializeProject,
 		updateProject,
-        syncProject
+		syncProject
 	} from '~/core/temp';
 	import type { ChapterEntity } from '~/data/entities/ChapterEntity';
 	import type { ProjectEntity } from '~/data/entities/ProjectEntity';
@@ -22,7 +22,7 @@
 	$: project = $project$.data;
 
 	$: chapters$ = mapToResource(getChaptersByProjectId(pid).$());
-    $: console.log($chapters$);
+	$: console.log($chapters$);
 	$: chapters = $chapters$.data?.sort((a, b) => b.no - a.no);
 	$: continuation = getContinuationChapter(chapters);
 
@@ -34,7 +34,7 @@
 		initializeProject(pid);
 	}
 
-    let syningProject = false;
+	let syningProject = false;
 
 	function getContinuationChapter(chapters: ChapterEntity[] | undefined) {
 		let i = chapters?.findIndex((chapter) => chapter.read !== 0);
@@ -85,13 +85,13 @@
 			.exec();
 	}
 
-    async function handleSyncProject() {
-        if (pid && !syningProject) {
-            syningProject = true;;
-            await syncProject(pid);
-            syningProject = false;
-        }
-    }
+	async function handleSyncProject() {
+		if (pid && !syningProject) {
+			syningProject = true;
+			await syncProject(pid);
+			syningProject = false;
+		}
+	}
 </script>
 
 <svelte:head>
@@ -158,7 +158,7 @@
 		{/each}
 	</div>
 
-	<div class="m-4 grid lg:grid-cols-2 gap-2">
+	<div class="m-4 grid gap-2 lg:grid-cols-2">
 		<a
 			href={continuation.href}
 			class="btn btn-primary btn-sm btn-block rounded-2xl"
@@ -167,12 +167,13 @@
 			{continuation.label}
 		</a>
 
-        <button 
-            class="btn btn-secondary btn-sm btn-block rounded-2xl"
-            class:btn-disabled={syningProject || continuation.disabled}
-            on:click|preventDefault={handleSyncProject}>
-            sync project
-        </button>
+		<button
+			class="btn btn-secondary btn-sm btn-block rounded-2xl"
+			class:btn-disabled={syningProject || continuation.disabled}
+			on:click|preventDefault={handleSyncProject}
+		>
+			sync project
+		</button>
 	</div>
 
 	<div class="flex border-b border-base-content/10 py-4 font-semibold">
