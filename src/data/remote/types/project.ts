@@ -1,5 +1,5 @@
-import { type ProjectGenre } from "~/services/project/projectGenres";
-import { type ProjectType } from "~/services/project/projectTypes";
+import { type ProjectGenre } from '~/services/project/projectGenres';
+import { type ProjectType } from '~/services/project/projectTypes';
 
 export type SearchProjectParams = {
 	keyword?: string;

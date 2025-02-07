@@ -29,7 +29,7 @@
 			href="/history"
 			title="History"
 			class="nav-item"
-			class:active={$page.url.pathname === '/history'}
+			class:active={$page.url.pathname.startsWith("/history")}
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -52,7 +52,7 @@
 			href="/library"
 			title="Library"
 			class="nav-item"
-			class:active={$page.url.pathname === '/library'}
+			class:active={ $page.url.pathname.startsWith("/library")}
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"

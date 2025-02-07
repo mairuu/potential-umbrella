@@ -1,28 +1,19 @@
 <script lang="ts">
-	import { PROJECT_STORE_NAME } from '~/data/local/schema/TofuDbSchema';
-	import { db } from '~/module';
+	import { chapterService, projectService } from '~/module';
 	import type { PageData } from './$types';
 	import { fade } from 'svelte/transition';
-	import {
-		mapToResource,
-		getProjectById,
-		getChaptersByProjectId,
-		initializeProject,
-		updateProject,
-		syncProject
-	} from '~/core/temp';
 	import type { ChapterEntity } from '~/data/local/entities/ChapterEntity';
 	import type { ProjectEntity } from '~/data/local/entities/ProjectEntity';
+	import { mapToResource } from '~/utils/mapToResource';
 
 	export let data: PageData;
 
 	$: pid = data.projectId;
 
-	$: project$ = mapToResource(getProjectById(pid).$());
+	$: project$ = mapToResource(projectService.subsribeById(pid));
 	$: project = $project$.data;
 
-	$: chapters$ = mapToResource(getChaptersByProjectId(pid).$());
-	$: console.log($chapters$);
+	$: chapters$ = mapToResource(chapterService.subscribeByProjectId(pid));
 	$: chapters = $chapters$.data?.sort((a, b) => b.no - a.no);
 	$: continuation = getContinuationChapter(chapters);
 
@@ -31,7 +22,7 @@
 	$: needInitilizeProject =
 		$project$.isSucess() && (!$project$.data || !$project$.data.initialized);
 	$: if (needInitilizeProject) {
-		initializeProject(pid);
+		projectService.initialize(pid);
 	}
 
 	let syningProject = false;
@@ -80,15 +71,13 @@
 	}
 
 	function toggleFavorite(project: ProjectEntity) {
-		db.mutate([PROJECT_STORE_NAME])
-			.handledBy(updateProject({ id: project.id, favorite: project.favorite ? 0 : Date.now() }))
-			.exec();
+		projectService.update({ id: project.id, favorite: project.favorite ? 0 : Date.now() });
 	}
 
 	async function handleSyncProject() {
 		if (pid && !syningProject) {
 			syningProject = true;
-			await syncProject(pid);
+			await projectService.sync(pid);
 			syningProject = false;
 		}
 	}

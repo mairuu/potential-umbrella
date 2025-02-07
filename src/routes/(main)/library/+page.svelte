@@ -1,28 +1,9 @@
 <script lang="ts">
-	import {
-		PROJECT_STORE_INDEX_FAVORITE,
-		PROJECT_STORE_NAME
-	} from '~/data/local/schema/TofuDbSchema';
-	import { db } from '~/module';
-	import { mapToResource } from '~/core/temp';
+	import { mapToResource } from '~/utils/mapToResource';
 	import LibraryCard from './LibraryCard.svelte';
-	import { TransactorResultBuilder } from '~/core/database/Transactor';
+	import { projectService } from '~/module';
 
-	function getAllFavorites() {
-		return db
-			.query([PROJECT_STORE_NAME])
-			.observeOn(PROJECT_STORE_NAME)
-			.handledBy(async (tx) => {
-				const result = await tx
-					.objectStore(PROJECT_STORE_NAME)
-					.index(PROJECT_STORE_INDEX_FAVORITE)
-					.getAllKeys(IDBKeyRange.lowerBound(0, true));
-
-				return new TransactorResultBuilder().withValue(result).build();
-			});
-	}
-
-	const projectIds$ = mapToResource(getAllFavorites().$());
+	const projectIds$ = mapToResource(projectService.subsribeAllFavorites());
 </script>
 
 <svelte:head>

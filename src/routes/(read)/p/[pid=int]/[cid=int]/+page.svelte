@@ -1,32 +1,25 @@
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
 	import type { PageData } from './$types';
-	import {
-		mapToResource,
-		getProjectById,
-		getChaptersByProjectId,
-		initializeProject,
-		updateChapter
-	} from '~/core/temp';
-	import { chapterApi, db } from '~/module';
-	import { CHAPTER_STORE_NAME } from '~/data/local/schema/TofuDbSchema';
 	import type { ChapterEntity } from '~/data/local/entities/ChapterEntity';
 	import { afterNavigate, beforeNavigate, disableScrollHandling } from '$app/navigation';
 	import LazyLoadImage from './LazyLoadImage.svelte';
 	import ReadNav from './ReadNav.svelte';
+	import { mapToResource } from '~/utils/mapToResource';
+	import { chapterService, projectService } from '~/module';
 
 	export let data: PageData;
 
 	$: pid = data.projectId;
 	$: cid = data.chapterId;
 
-	$: project$ = mapToResource(getProjectById(pid).$());
+	$: project$ = mapToResource(projectService.subsribeById(pid));
 	$: project = $project$.data || null;
 
-	$: chapters$ = mapToResource(getChaptersByProjectId(pid).$());
+	$: chapters$ = mapToResource(chapterService.subscribeByProjectId(pid));
 	$: chapters = $chapters$.data?.sort((a, b) => b.no - a.no) || null;
 
-	$: content = chapterApi.getContent({ chapterId: cid, projectId: pid });
+	$: content = chapterService.getContent({ chapterId: cid, projectId: pid });
 	$: chapterNavigation = getChapterNavigation(cid, chapters);
 
 	$: progress = chapterNavigation?.current.progress;
@@ -35,7 +28,7 @@
 	$: needInitilizeProject =
 		$project$.isSucess() && (!$project$.data || !$project$.data.initialized);
 	$: if (needInitilizeProject) {
-		initializeProject(pid);
+		projectService.initialize(pid);
 	}
 
 	let showNav = true;
@@ -79,15 +72,11 @@
 	}
 
 	afterNavigate(() => {
-		db.mutate([CHAPTER_STORE_NAME])
-			.handledBy(updateChapter({ id: cid, read: Date.now() }))
-			.exec();
+		chapterService.update({ id: cid, read: Date.now() });
 	});
 
 	beforeNavigate(() => {
-		db.mutate([CHAPTER_STORE_NAME])
-			.handledBy(updateChapter({ id: cid, progress: calculateProgress() }))
-			.exec();
+		chapterService.update({ id: cid, progress: calculateProgress() });
 	});
 
 	onMount(() => {

@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { getProjectById } from '~/core/temp';
+	import { projectService } from '~/module';
 
 	export let id: number;
 
-	$: project = getProjectById(id).$();
+	$: project = projectService.subsribeById(id);
 </script>
 
 <a class="relative" href="/p/{$project?.id || ''}">

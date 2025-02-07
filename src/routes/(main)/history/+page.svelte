@@ -1,14 +1,7 @@
 <script lang="ts">
-	import {
-		CHAPTER_STORE_INDEX_READ,
-		CHAPTER_STORE_NAME,
-		PROJECT_STORE_NAME
-	} from '~/data/local/schema/TofuDbSchema';
-	import type { ChapterEntity } from '~/data/local/entities/ChapterEntity';
-	import { db } from '~/module';
-	import { groupBy, mapToResource, updateChapter } from '~/core/temp';
-	import type { ProjectEntity } from '~/data/local/entities/ProjectEntity';
-	import { TransactorResultBuilder } from '~/core/database/Transactor';
+	import { mapToResource } from '~/utils/mapToResource';
+	import { chapterService } from '~/module';
+	import { groupBy } from '~/utils/groupBy';
 
 	const fa = new Intl.DateTimeFormat(undefined, {
 		hour: 'numeric',
@@ -21,45 +14,14 @@
 		year: '2-digit'
 	});
 
-	const readChapters$ = mapToResource(getReadChapters().$());
+	const readChapters$ = mapToResource(chapterService.subscribeRead());
 
-	type ProjectChapter = { project: ProjectEntity; chapter: ChapterEntity };
-
-	function getReadChapters() {
-		return db.query([CHAPTER_STORE_NAME, PROJECT_STORE_NAME]).handledBy(async (tx) => {
-			const projectsStore = tx.objectStore(PROJECT_STORE_NAME);
-			const chaptersStore = tx.objectStore(CHAPTER_STORE_NAME);
-
-			let set: Set<number> = new Set();
-			let arr: ProjectChapter[] = [];
-			let cursor = await chaptersStore
-				.index(CHAPTER_STORE_INDEX_READ)
-				.openCursor(IDBKeyRange.lowerBound(0, true), 'prev');
-
-			while (cursor) {
-				if (!set.has(cursor.value.pid)) {
-					set.add(cursor.value.pid);
-					let project = await projectsStore.get(cursor.value.pid);
-					arr.push({ project: project!, chapter: cursor.value });
-				}
-
-				cursor = await cursor.continue();
-			}
-
-			return new TransactorResultBuilder().withValue(arr).build();
+	function onDeleteHistory(chapterId: number) {
+		chapterService.update({
+			id: chapterId,
+			read: 0,
+			progress: 0
 		});
-	}
-
-	function onDeleteHistory(pc: ProjectChapter) {
-		db.mutate([CHAPTER_STORE_NAME])
-			.handledBy(
-				updateChapter({
-					id: pc.chapter.id,
-					read: 0,
-					progress: 0
-				})
-			)
-			.exec();
 	}
 </script>
 
@@ -113,7 +75,7 @@
 							</a>
 							<button
 								class="btn btn-circle btn-ghost flex-shrink-0 self-center"
-								on:click={() => onDeleteHistory({ project, chapter })}
+								on:click={() => onDeleteHistory(chapter.id)}
 							>
 								<svg
 									xmlns="http://www.w3.org/2000/svg"

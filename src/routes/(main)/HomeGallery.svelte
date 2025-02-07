@@ -1,8 +1,6 @@
 <script lang="ts">
-	import { PROJECT_STORE_NAME } from '~/data/local/schema/TofuDbSchema';
-	import { db, projectApi } from '~/module';
+	import { projectApi, projectService } from '~/module';
 	import ProjectCard from './ProjectCard.svelte';
-	import { remoteToLocalProject } from '~/core/temp';
 	import type { ProjectType } from '~/services/project/projectTypes';
 
 	export let n: number;
@@ -13,9 +11,7 @@
 
 	$: projectApi
 		.getLatest({ type })
-		.then((latests) =>
-			db.mutate([PROJECT_STORE_NAME]).handledBy(remoteToLocalProject(latests)).exec()
-		)
+		.then((latests) => projectService.remotesToLocals(latests))
 		.then((ids) => {
 			items = ids.filter((id) => {
 				if (!exists.has(id)) {
