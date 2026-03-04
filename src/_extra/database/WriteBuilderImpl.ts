@@ -1,23 +1,15 @@
-import type { DBSchema, IDBPTransaction, StoreNames } from 'idb';
 import { ChangesBuilder } from './Changes';
-import type { IdbpProvider } from './IdbpProvider';
 import type { WriteBuilder, Tracker } from './WriteBuilder';
 import type { Changes } from './Changes';
 
-export class WriteBuilderImpl<S extends DBSchema, Stores extends ArrayLike<StoreNames<S>>>
-	implements WriteBuilder<S, Stores>
-{
+export class WriteBuilderImpl<Tx> implements WriteBuilder<Tx> {
 	constructor(
-		private _provider: IdbpProvider<S>,
-		private _stores: Stores,
+		private _openTx: () => Promise<[Tx, Promise<void>]>,
 		private _notify: (changes: Changes) => void
 	) {}
 
-	async run<T>(
-		fn: (tx: IDBPTransaction<S, Stores, 'readwrite'>, track: Tracker) => Promise<T>
-	): Promise<T> {
-		const db = await this._provider.getDatabase();
-		const tx = db.transaction(this._stores, 'readwrite');
+	async run<T>(fn: (tx: Tx, track: Tracker) => Promise<T>): Promise<T> {
+		const [tx, done] = await this._openTx();
 		const builder = new ChangesBuilder();
 
 		const track: Tracker = (storeName, key) => {
@@ -28,7 +20,7 @@ export class WriteBuilderImpl<S extends DBSchema, Stores extends ArrayLike<Store
 
 		const changes = builder.build();
 		if (changes.valid()) {
-			tx.done.then(() => this._notify(changes));
+			done.then(() => this._notify(changes));
 		}
 
 		return value;
