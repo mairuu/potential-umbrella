@@ -36,7 +36,7 @@ export class ProjectApi {
 			API_ENDPOINTS.project.latest,
 			{
 				type: params.type,
-				page: (params.page ?? 0).toString(),
+				page: (params.page ?? 1).toString(),
 				takes: (params.takes ?? 12).toString()
 			},
 			{ signal }

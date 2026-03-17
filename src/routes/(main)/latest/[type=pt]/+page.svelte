@@ -50,7 +50,7 @@
 			window.scrollY + 2 * window.innerHeight > document.documentElement.scrollHeight;
 
 		if (shouldAppend) {
-			const page = pages.length;
+			const page = pages.length + 1;
 			fetchAndAppend(type, page);
 		}
 	}

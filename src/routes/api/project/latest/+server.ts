@@ -1,5 +1,4 @@
 import { error, type RequestHandler } from '@sveltejs/kit';
-import { decryptResponseAsJson } from '~/utils/decode';
 
 export const GET: RequestHandler = async ({ url }) => {
 	// https://www.nekopost.net/api/project/latestChapter?t=m&p=0&s=12
@@ -18,28 +17,49 @@ export const GET: RequestHandler = async ({ url }) => {
 		throw error(400);
 	}
 
-	const resourceUrl = `https://www.nekopost.net/api/project/latestChapter?t=${type[0]}&p=${page}&s=${takes}`;
+	const resourceUrl = `https://www.nekopost.net/api/project/latest`;
 
-	const response = await fetch(resourceUrl);
-	const model:
-		| {
-				noNewChapter: string;
-				pid: number;
-				projectName: string;
-				chapterId: number;
-				chapterNo: string;
-				chapterName: string;
-				releaseDate: string;
-				cover: string;
-				editorID: number;
-				editorName: string;
-				coverVersion: number;
-				status: number;
-		  }[]
-		| null = await decryptResponseAsJson(response);
+	const body = {
+		type: type[0],
+		paging: {
+			pageNo: parseInt(page),
+			pageSize: parseInt(takes)
+		}
+	};
+
+	console.log(body);
+
+	const response = await fetch(resourceUrl, {
+		method: 'POST',
+		headers: {
+			referer: 'https://www.nekopost.net/',
+			'content-type': 'application/json'
+		},
+		body: JSON.stringify(body)
+	});
+
+	const dto: {
+		listChapter:
+			| {
+					noNewChapter: number;
+					pid: number;
+					projectName: string;
+					chapterId: number;
+					chapterNo: string;
+					chapterName: string;
+					releaseDate: string;
+					cover: string;
+					editorId: number;
+					editorName: string;
+					coverVersion: number;
+					status: string;
+					projectType: string;
+			  }[]
+			| null;
+	} = await response.json();
 
 	const latests =
-		model?.map((item) => ({
+		dto?.listChapter?.map((item) => ({
 			id: item.pid,
 			name: item.projectName
 		})) || [];

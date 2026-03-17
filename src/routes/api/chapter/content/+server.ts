@@ -1,5 +1,4 @@
 import { error, type RequestHandler } from '@sveltejs/kit';
-import { decryptResponseAsJson } from '~/utils/decode';
 
 export const GET: RequestHandler = async ({ url }) => {
 	const projectId = parseInt(url.searchParams.get('pid') || '');
@@ -9,10 +8,10 @@ export const GET: RequestHandler = async ({ url }) => {
 		throw error(400);
 	}
 
-	const response = await fetch(`https://www.nekopost.net/api/project/chapterInfo`, {
-		method: 'POST',
-		headers: { referer: 'https://www.nekopost.net/', origin: 'https://www.nekopost.net' },
-		body: JSON.stringify({ c: chapterId, p: projectId.toString() })
+	const endpoint = `https://www.osemocphoto.com/collectManga/${projectId}/${chapterId}/${projectId}_${chapterId}.json`;
+	const response = await fetch(endpoint, {
+		method: 'GET',
+		headers: { referer: 'https://www.nekopost.net/', origin: 'https://www.nekopost.net' }
 	});
 	const model: {
 		projectId: string;
@@ -24,7 +23,6 @@ export const GET: RequestHandler = async ({ url }) => {
 		status: string;
 		createById: string;
 		createDate: string;
-		publishDate: any;
 		pageItem?: Array<{
 			id: number;
 			pageNo: number;
@@ -36,7 +34,7 @@ export const GET: RequestHandler = async ({ url }) => {
 		}>;
 		novelContent?: string;
 		pageText?: string;
-	} = await decryptResponseAsJson(response);
+	} = await response.json();
 
 	if (!(model.novelContent || model.pageText) && !model.pageItem) {
 		throw error(500, { message: 'no content' });

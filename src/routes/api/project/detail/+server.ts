@@ -1,5 +1,4 @@
 import { error, type RequestHandler } from '@sveltejs/kit';
-import { decryptResponseAsJson } from '~/utils/decode';
 
 function projectTypeRecognition(type: string) {
 	switch (type) {
@@ -22,23 +21,25 @@ export const GET: RequestHandler = async ({ url }) => {
 		throw error(404);
 	}
 
-	const response = await fetch(`https://www.nekopost.net/api/project/detail?pid=${projectId}`, {
+	const response = await fetch(`https://api.osemocphoto.com/frontAPI/getProjectInfo/${projectId}`, {
 		headers: {
 			referer: 'https://www.nekopost.net/'
 		}
 	});
-	const model: {
-		project: Array<{
-			pid: number;
+	const dto: {
+		code: number;
+		desc: string;
+		projectInfo?: {
+			projectId: string;
 			projectName: string;
 			aliasName: string;
 			website: string;
-			author: number;
+			author: string;
 			authorName: string;
-			artist: number;
+			artist: string;
 			artistName: string;
 			info: string;
-			status: number;
+			status: string;
 			flgMature: string;
 			flgIntense: string;
 			flgViolent: string;
@@ -51,46 +52,45 @@ export const GET: RequestHandler = async ({ url }) => {
 			readerGroup: string;
 			releaseDate: string;
 			updateDate: string;
-			views: number;
-			imageVersion: number;
-		}>;
-		listCate: Array<{
-			cateCode: number;
+			views: string;
+			imageVersion: string;
+		};
+		listCate: {
+			cateCode: string;
 			cateName: string;
 			cateLink: string;
-		}>;
-		listChapter: Array<{
-			chapterId: number;
-			chapterNo: number;
+		}[];
+		listChapter: {
+			chapterId: string;
+			chapterNo: string;
 			chapterName: string;
-			status: number;
+			status: string;
 			publishDate: string;
 			createDate: string;
 			view: string;
-			ownerId: number;
+			ownerId: string;
 			providerName: string;
-		}>;
-		listOtherMedia: Array<{
-			fileName: string;
-			title: string;
-			category: number;
-		}>;
-	} = await decryptResponseAsJson(response);
+		}[];
+		listProvider: {
+			userId: string;
+			displayName: string;
+		}[];
+	} = await response.json();
 
-	if (!model.project[0]) {
+	if (!dto.projectInfo) {
 		throw error(404, { message: 'project not found' });
 	}
 
 	const project = {
-		id: model.project[0].pid,
-		name: model.project[0].projectName,
-		type: projectTypeRecognition(model.project[0].projectType),
-		genres: model.listCate.map((cate) => cate.cateName.toLowerCase()),
-		synopsis: model.project[0].info
+		id: parseInt(dto.projectInfo.projectId),
+		name: dto.projectInfo.projectName,
+		type: projectTypeRecognition(dto.projectInfo.projectType),
+		genres: dto.listCate.map((cate) => cate.cateName.toLowerCase()),
+		synopsis: dto.projectInfo.info
 	};
 
-	const chapters = model.listChapter.map((chapter) => ({
-		id: chapter.chapterId,
+	const chapters = dto.listChapter.map((chapter) => ({
+		id: parseInt(chapter.chapterId),
 		no: chapter.chapterNo,
 		name: chapter.chapterName,
 		provider: chapter.providerName,
